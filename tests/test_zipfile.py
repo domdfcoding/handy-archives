@@ -699,15 +699,15 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 		with ZipFile(tmp_pathplus / TESTFN2, mode='r') as zipfp:
 			with zipfp.open(fname) as fid:
 				fid.close()
-				with pytest.raises(ValueError, match="^$"):
+				with pytest.raises(ValueError, match="read from closed file."):
 					fid.read()
-				with pytest.raises(ValueError, match="^$"):
+				with pytest.raises(ValueError, match="seek on closed file"):
 					fid.seek(0)
-				with pytest.raises(ValueError, match="^$"):
+				with pytest.raises(ValueError, match="tell on closed file"):
 					fid.tell()
-				with pytest.raises(ValueError, match="^$"):
+				with pytest.raises(ValueError, match="I/O operation on closed file"):
 					fid.readable()
-				with pytest.raises(ValueError, match="^$"):
+				with pytest.raises(ValueError, match="I/O operation on closed file"):
 					fid.seekable()
 
 	def test_write_to_readonly(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
