@@ -489,11 +489,11 @@ class CommonReadTest(ReadTest):
 					with pytest.raises(tarfile.ReadError, match="unexpected end of data"):
 						tar.extractfile(t).read()
 
+	@pytest.mark.xfail(condition=sys.platform == "win32", reason="May not have been patched")
 	def test_length_zero_header(self):
-		# bpo-39017 (CVE-2019-20907): reading a zero-length header should fail
-		# with an exception
+		# bpo-39017 (CVE-2019-20907): reading a zero-length header should fail with an exception
 		with pytest.raises(tarfile.ReadError, match="file could not be opened successfully"):
-			with TarFile.open(findfile("recursion.tar")) as tar:
+			with TarFile.open(findfile("recursion.tar")):
 				pass
 
 
