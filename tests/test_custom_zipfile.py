@@ -1,3 +1,6 @@
+# stdlib
+from typing import IO
+
 # 3rd party
 import pytest
 from domdf_python_tools.paths import PathPlus, TemporaryPathPlus
@@ -31,6 +34,8 @@ def test_encrypted(tmp_pathplus: PathPlus):
 			b'\x00\x00\x00\x00test.txtPK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x006\x00'
 			b'\x00\x00L\x00\x00\x00\x00\x00'
 			)
+
+	fp: IO[bytes]
 
 	with open(tmp_pathplus / "test.zip", "wb") as fp:
 		fp.write(data)
