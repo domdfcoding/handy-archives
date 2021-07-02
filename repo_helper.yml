@@ -1,0 +1,54 @@
+# Configuration for 'repo_helper' (https://github.com/domdfcoding/repo_helper)
+---
+modname: 'handy-archives'
+copyright_years: '2021'
+author: 'Dominic Davis-Foster'
+email: 'dominic@davis-foster.co.uk'
+username: 'domdfcoding'
+version: '0.0.0'
+license: 'MIT'
+short_desc: 'Some handy archive helpers for Python.'
+
+min_coverage: 100
+docs_fail_on_warning: true
+sphinx_html_theme: furo
+use_whey: true
+tox_testenv_extras: testing
+standalone_contrib_guide: true
+
+python_versions:
+ - '3.6'
+ - '3.7'
+ - '3.8'
+ - '3.9'
+ - 3.10-dev
+ - pypy36
+ - pypy37
+
+conda_channels:
+ - conda-forge
+
+sphinx_conf_epilogue:
+ - nitpicky = True
+ - autosummary_col_type = "\Xx"
+
+keywords:
+ - archive
+ - zip
+ - tar
+ - shutil
+
+extra_sphinx_extensions:
+ - sphinx_toolbox_experimental.html_section
+ - sphinx_toolbox_experimental.needspace
+ - sphinx_toolbox_experimental.succinct_seealso
+ - local_extension
+
+extras_require:
+ testing:
+  - coincidence>=0.2.0
+  - pytest>=6.0.0
+
+intersphinx_mapping:
+ - "'coincidence': ('https://coincidence.readthedocs.io/en/latest/', None)"
+ - "'pytest-regressions': ('https://pytest-regressions.readthedocs.io/en/latest/', None)"
