@@ -3,6 +3,9 @@
 #  testing.py
 """
 Pytest helpers.
+
+.. extras-require:: testing
+	:pyproject:
 """
 #
 #  Copyright © 2021 Dominic Davis-Foster <dominic@davis-foster.co.uk>
@@ -42,9 +45,8 @@ __all__ = ["ArchiveFileRegressionFixture", "archive_regression"]
 
 class ArchiveFileRegressionFixture(AdvancedFileRegressionFixture):
 	"""
-	Subclass of :class:`coincidence.regressions.AdvancedFileRegressionFixture`
-	with additional methods for checking files in ``tar`` and ``zip`` archives.
-	"""  # noqa: D400
+	Class for performing regression checks on files in ``tar`` and ``zip`` archives.
+	"""
 
 	def check_archive(self, archive: Union[TarFile, ZipFile], filename: str, **kwargs):
 		r"""
