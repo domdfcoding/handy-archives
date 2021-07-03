@@ -459,7 +459,7 @@ class CommonReadTest(ReadTest):
 
 				tar = TarFile.open(tmpname, mode='r', ignore_zeros=True)
 				try:
-					assert tar.getnames() == ["foo"], "ignore_zeros=True should have skipped the %r-blocks" % char
+					assert tar.getnames() == ["foo"], f"ignore_zeros=True should have skipped the {char!r}-blocks"
 				finally:
 					tar.close()
 
@@ -627,10 +627,10 @@ class MiscReadTestBase(CommonReadTest):
 
 	def test_check_members(self):
 		for tarinfo in self.tar:
-			assert int(tarinfo.mtime) == 0o7606136617, "wrong mtime for %s" % tarinfo.name
+			assert int(tarinfo.mtime) == 0o7606136617, f"wrong mtime for {tarinfo.name}"
 			if not tarinfo.name.startswith("ustar/"):
 				continue
-			assert tarinfo.uname == "tarfile", "wrong uname for %s" % tarinfo.name
+			assert tarinfo.uname == "tarfile", f"wrong uname for {tarinfo.name}"
 
 	def test_find_members(self):
 		assert self.tar.getmembers()[-1].name == "misc/eof", "could not find all members"
@@ -911,7 +911,7 @@ class TestReadMember(ReadTest):
 	def _test_member(self, tarinfo, chksum=None, **kwargs):
 		if chksum is not None:
 			with self.tar.extractfile(tarinfo) as f:
-				assert sha256sum(f.read()) == chksum, "wrong sha256sum for %s" % tarinfo.name
+				assert sha256sum(f.read()) == chksum, f"wrong sha256sum for {tarinfo.name}"
 
 		kwargs["mtime"] = 0o7606136617
 		kwargs["uid"] = 1000
@@ -1275,7 +1275,7 @@ class TestWrite(WriteTestBase):
 			try:
 				os.link(target, link)
 			except PermissionError as e:
-				pytest.skip("os.link(): %s" % e)
+				pytest.skip(f"os.link(): {e}")
 			try:
 				tar = TarFile.open(tmpname, self.mode)
 				try:
