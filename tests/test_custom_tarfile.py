@@ -1,23 +1,25 @@
+# stdlib
+import datetime
+
 # 3rd party
 import pytest
-from domdf_python_tools.paths import PathPlus, TemporaryPathPlus
+from domdf_python_tools.paths import PathPlus
 
 # this package
 from handy_archives import TarFile
 from handy_archives.testing import ArchiveFileRegressionFixture
 
 
-@pytest.fixture(scope="session")
-def example_tarfile():
-	with TemporaryPathPlus() as tmp_pathplus:
-		with TarFile.open(tmp_pathplus / "example.tar", mode='w') as tarfile:
+@pytest.fixture()
+def example_tarfile(tmp_pathplus: PathPlus):
+	with TarFile.open(tmp_pathplus / "example.tar", mode='w') as tarfile:
 
-			tarfile.add(PathPlus(__file__).parent / "Hams_Hall.jpg", arcname="Hams_Hall.jpg")
+		tarfile.add(PathPlus(__file__).parent / "Hams_Hall.jpg", arcname="Hams_Hall.jpg")
 
-			(tmp_pathplus / "text_file.md").write_text("# Example\n\nThis is an example text file")
-			tarfile.add(tmp_pathplus / "text_file.md", arcname="text_file.md")
+		(tmp_pathplus / "text_file.md").write_text("# Example\n\nThis is an example text file")
+		tarfile.add(tmp_pathplus / "text_file.md", arcname="text_file.md")
 
-		yield tmp_pathplus / "example.tar"
+	yield tmp_pathplus / "example.tar"
 
 
 def test_extractfile(example_tarfile: PathPlus):
@@ -40,6 +42,27 @@ def test_read_text(example_tarfile: PathPlus):
 	with TarFile.open(example_tarfile, 'r') as tarfile:
 		info = tarfile.getmember("text_file.md")
 		assert tarfile.read_text(info) == "# Example\n\nThis is an example text file"
+
+
+def test_write_file(example_tarfile: PathPlus, tmp_pathplus: PathPlus):
+	my_file = tmp_pathplus / "my_file.txt"
+	my_file.write_text("# Example2\n\nThis is another example text file")
+
+	with TarFile(example_tarfile, 'w') as zip_file:
+		zip_file.write_file(my_file, arcname=my_file.name)
+		zip_file.write_file(my_file, arcname=PathPlus("my_file2.md"), mtime=datetime.datetime(1996, 10, 13, 2, 20))
+
+		with pytest.raises(IsADirectoryError, match="'TarFile.write_file' only supports files"):
+			zip_file.write_file(tmp_pathplus)
+
+	with TarFile(example_tarfile, 'r') as zip_file:
+		assert zip_file.read_text("my_file.txt") == "# Example2\n\nThis is another example text file"
+
+		info = zip_file.getmember("my_file2.md")
+		assert info.mtime == datetime.datetime(1996, 10, 13, 2, 20).timestamp()
+		assert zip_file.read_text(info) == "# Example2\n\nThis is another example text file"
+
+		assert zip_file.getnames() == ["my_file.txt", "my_file2.md"]
 
 
 def test_read_bytes(example_tarfile: PathPlus):

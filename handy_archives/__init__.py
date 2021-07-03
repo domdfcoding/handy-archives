@@ -27,12 +27,13 @@ Some handy archive helpers for Python.
 #
 
 # stdlib
+import datetime
 import os
 import shutil
 import sys
 import tarfile
 import zipfile
-from typing import IO, Type, TypeVar, Union
+from typing import IO, Optional, Type, TypeVar, Union
 
 # 3rd party
 from domdf_python_tools.typing import PathLike
@@ -138,6 +139,50 @@ class TarFile(tarfile.TarFile):
 		with self.extractfile(member) as fd:
 			return fd.read()
 
+	def write_file(self, filename, arcname=None, mtime: Optional[datetime.datetime] = None):
+		"""
+		Add the file ``filename`` to the archive under the name ``arcname``.
+
+		:param filename:
+		:param arcname: An alternative name for the file in the archive.
+		:param mtime: The last modified time of the file.
+			Defaults to the value obtained from :func:`os.stat`.
+		:no-default mtime:
+		"""
+
+		if not os.path.isfile(filename):
+			raise IsADirectoryError("'TarFile.write_file' only supports files.")
+
+		if mtime is None:
+			return self.add(filename, arcname, recursive=False)
+
+		if arcname is None:  # pragma: no cover
+			arcname = filename
+
+		if isinstance(arcname, os.PathLike):
+			arcname = os.fspath(arcname)
+
+		self._check("awx")  # type: ignore
+
+		# Skip if somebody tries to archive the archive...
+		if self.name is not None and os.path.abspath(filename) == self.name:  # pragma: no cover
+			self._dbg(2, "tarfile: Skipped %r" % filename)  # type: ignore
+			return
+
+		self._dbg(1, filename)  # type: ignore
+
+		# Create a TarInfo object from the file.
+		tarinfo = self.gettarinfo(filename, arcname)
+		tarinfo.mtime = mtime.timestamp()  # type: ignore
+
+		if tarinfo is None:  # pragma: no cover
+			self._dbg(1, f"tarfile: Unsupported type {filename!r}")
+			return
+
+		# Append the tar header and data to the archive.
+		with open(filename, "rb") as f:
+			self.addfile(tarinfo, f)
+
 	def __enter__(self: _Self) -> _Self:  # noqa: D102
 		return super().__enter__()  # type: ignore
 
@@ -230,6 +275,39 @@ class ZipFile(zipfile.ZipFile):
 
 		with self.extractfile(member, pwd=pwd) as fd:
 			return fd.read()
+
+	def write_file(self, filename, arcname=None, mtime: Optional[datetime.datetime] = None):
+		"""
+		Put the bytes from ``filename`` into the archive under the name ``arcname``.
+
+		:param filename:
+		:param arcname: An alternative name for the file in the archive.
+		:param mtime: The last modified time of the file.
+			Defaults to the value obtained from :func:`os.stat`.
+		:no-default mtime:
+		"""
+
+		if self._writing:  # type: ignore
+			raise ValueError("Can't write to ZIP archive while an open writing handle exists")
+
+		if not os.path.isfile(filename):
+			raise IsADirectoryError("'ZipFile.write_file' only supports files.")
+
+		if mtime is None:
+			return self.write(filename, arcname)
+
+		if isinstance(arcname, os.PathLike):
+			arcname = os.fspath(arcname)
+
+		zinfo = zipfile.ZipInfo(arcname, mtime.timetuple()[:6])
+
+		zinfo.compress_type = self.compression  # type: ignore
+
+		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
+			zinfo._compresslevel = self.compresslevel  # type: ignore
+
+		with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
+			shutil.copyfileobj(src, dest, 1024 * 8)
 
 	def __enter__(self: _Self) -> _Self:
 		return super().__enter__()  # type: ignore
