@@ -304,7 +304,7 @@ class ZipFile(zipfile.ZipFile):
 		zinfo.compress_type = self.compression  # type: ignore
 
 		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
-			zinfo._compresslevel = self.compresslevel  # type: ignore
+			zinfo._compresslevel = self.compresslevel
 
 		with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
 			shutil.copyfileobj(src, dest, 1024 * 8)
