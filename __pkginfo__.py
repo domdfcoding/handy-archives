@@ -16,7 +16,7 @@ __all__ = [
 		"extras_require",
 		]
 
-__version__ = "0.0.0"
+__version__ = "0.1.0"
 extras_require = {
 		"testing": ["coincidence>=0.2.0", "pytest>=6.0.0"], "all": ["coincidence>=0.2.0", "pytest>=6.0.0"]
 		}

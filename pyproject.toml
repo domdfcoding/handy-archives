@@ -4,7 +4,7 @@ build-backend = "whey"
 
 [project]
 name = "handy-archives"
-version = "0.0.0"
+version = "0.1.0"
 description = "Some handy archive helpers for Python."
 readme = "README.rst"
 keywords = [ "archive", "shutil", "tar", "zip",]
