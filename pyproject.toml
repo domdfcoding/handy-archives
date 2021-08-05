@@ -60,6 +60,7 @@ extensions = [
     "sphinxcontrib.default_values",
     "sphinxcontrib.toctree_plus",
     "sphinx_debuginfo",
+    "sphinx_licenseinfo",
     "seed_intersphinx_mapping",
     "sphinx_toolbox_experimental.html_section",
     "sphinx_toolbox_experimental.needspace",
@@ -128,3 +129,10 @@ python-implementations = [ "CPython", "PyPy",]
 platforms = [ "Windows", "macOS", "Linux",]
 license-key = "MIT"
 package = "handy_archives"
+
+[tool.mypy]
+python_version = "3.6"
+namespace_packages = true
+check_untyped_defs = true
+warn_unused_ignores = true
+no_implicit_optional = true
