@@ -116,16 +116,26 @@ class TarFile(tarfile.TarFile):
 		else:
 			return fd
 
-	def read_text(self, member: Union[str, tarfile.TarInfo]) -> str:
-		"""
+	def read_text(
+			self,
+			member: Union[str, tarfile.TarInfo],
+			*,
+			normalize_nl: bool = False,
+			) -> str:
+		r"""
 		Returns the content of the given file as a string.
 
 		:param member:
+		:param normalize_nl: If :py:obj:`True`, line endings are normalized to ``\n`` (LF).
 
 		:raises FileNotFoundError: If the file is not found in the archive.
+
+		:rtype:
+
+		.. versionadded:: 0.2.0  Added the ``normalize_nl`` option.
 		"""
 
-		return self.read_bytes(member).decode("UTF-8")
+		return _normalize_nl(self.read_bytes(member).decode("UTF-8"), normalize_nl)
 
 	def read_bytes(self, member: Union[str, tarfile.TarInfo]) -> bytes:
 		"""
@@ -246,18 +256,24 @@ class ZipFile(zipfile.ZipFile):
 			self,
 			member: Union[str, zipfile.ZipInfo],
 			pwd: Union[str, bytes, None] = None,
+			*,
+			normalize_nl: bool = False
 			) -> str:
-		"""
+		r"""
 		Returns the content of the given file as a string.
 
 		:param member:
 		:param pwd: The password to decrypt files.
-
+		:param normalize_nl: If :py:obj:`True`, line endings are normalized to ``\n`` (LF).
 
 		:raises FileNotFoundError: If the file is not found in the archive.
+
+		:rtype:
+
+		.. versionadded:: 0.2.0  Added the ``normalize_nl`` option.
 		"""
 
-		return self.read_bytes(member, pwd=pwd).decode("UTF-8")
+		return _normalize_nl(self.read_bytes(member, pwd=pwd).decode("UTF-8"), normalize_nl)
 
 	def read_bytes(
 			self,
@@ -330,3 +346,10 @@ def is_tarfile(name: Union[PathLike, IO[bytes]]):
 
 	except tarfile.TarError:
 		return False
+
+
+def _normalize_nl(text: str, enable: bool):
+	if enable:
+		return text.replace("\r\n", '\n').replace('\r', '\n')
+	else:
+		return text

@@ -17,7 +17,7 @@ def example_zipfile(tmp_pathplus: PathPlus):
 
 		zip_file.write(PathPlus(__file__).parent / "Hams_Hall.jpg", arcname="Hams_Hall.jpg")
 
-		(tmp_pathplus / "text_file.md").write_text("# Example\n\nThis is an example text file")
+		(tmp_pathplus / "text_file.md").write_text("# Example\r\n\r\nThis is an example text file")
 		zip_file.write(tmp_pathplus / "text_file.md", arcname="text_file.md")
 
 	yield tmp_pathplus / "example.tar"
@@ -57,11 +57,12 @@ def test_encrypted(tmp_pathplus: PathPlus):
 
 def test_extractfile(example_zipfile: PathPlus):
 	with ZipFile(example_zipfile, 'r') as zip_file:
-		assert zip_file.read_text("text_file.md") == "# Example\n\nThis is an example text file"
+		assert zip_file.read_text("text_file.md") == "# Example\r\n\r\nThis is an example text file"
+		assert zip_file.read_text("text_file.md", normalize_nl=True) == "# Example\n\nThis is an example text file"
 
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		with zip_file.extractfile("text_file.md") as fp:
-			assert fp.read() == b"# Example\n\nThis is an example text file"
+			assert fp.read() == b"# Example\r\n\r\nThis is an example text file"
 
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		with pytest.raises(FileNotFoundError, match="foo.py"):
@@ -70,10 +71,11 @@ def test_extractfile(example_zipfile: PathPlus):
 
 def test_read_text(example_zipfile: PathPlus):
 	with ZipFile(example_zipfile, 'r') as zip_file:
-		assert zip_file.read_text("text_file.md") == "# Example\n\nThis is an example text file"
+		assert zip_file.read_text("text_file.md") == "# Example\r\n\r\nThis is an example text file"
+		assert zip_file.read_text("text_file.md", normalize_nl=True) == "# Example\n\nThis is an example text file"
 
 		info = zip_file.getinfo("text_file.md")
-		assert zip_file.read_text(info) == "# Example\n\nThis is an example text file"
+		assert zip_file.read_text(info) == "# Example\r\n\r\nThis is an example text file"
 
 
 def test_write_file(example_zipfile: PathPlus, tmp_pathplus: PathPlus):
@@ -105,10 +107,10 @@ def test_write_file(example_zipfile: PathPlus, tmp_pathplus: PathPlus):
 
 def test_read_bytes(example_zipfile: PathPlus):
 	with ZipFile(example_zipfile, 'r') as zip_file:
-		assert zip_file.read_bytes("text_file.md") == b"# Example\n\nThis is an example text file"
+		assert zip_file.read_bytes("text_file.md") == b"# Example\r\n\r\nThis is an example text file"
 
 		info = zip_file.getinfo("text_file.md")
-		assert zip_file.read_bytes(info) == b"# Example\n\nThis is an example text file"
+		assert zip_file.read_bytes(info) == b"# Example\r\n\r\nThis is an example text file"
 
 
 def test_archive_regression(example_zipfile: PathPlus, archive_regression: ArchiveFileRegressionFixture):

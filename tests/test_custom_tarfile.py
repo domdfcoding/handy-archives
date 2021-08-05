@@ -16,7 +16,7 @@ def example_tarfile(tmp_pathplus: PathPlus):
 
 		tarfile.add(PathPlus(__file__).parent / "Hams_Hall.jpg", arcname="Hams_Hall.jpg")
 
-		(tmp_pathplus / "text_file.md").write_text("# Example\n\nThis is an example text file")
+		(tmp_pathplus / "text_file.md").write_text("# Example\r\n\r\nThis is an example text file")
 		tarfile.add(tmp_pathplus / "text_file.md", arcname="text_file.md")
 
 	yield tmp_pathplus / "example.tar"
@@ -24,11 +24,12 @@ def example_tarfile(tmp_pathplus: PathPlus):
 
 def test_extractfile(example_tarfile: PathPlus):
 	with TarFile.open(example_tarfile, 'r') as tarfile:
-		assert tarfile.read_text("text_file.md") == "# Example\n\nThis is an example text file"
+		assert tarfile.read_text("text_file.md") == "# Example\r\n\r\nThis is an example text file"
+		assert tarfile.read_text("text_file.md", normalize_nl=True) == "# Example\n\nThis is an example text file"
 
 	with TarFile.open(example_tarfile, 'r') as tarfile:
 		with tarfile.extractfile("text_file.md") as fp:
-			assert fp.read() == b"# Example\n\nThis is an example text file"
+			assert fp.read() == b"# Example\r\n\r\nThis is an example text file"
 
 	with TarFile.open(example_tarfile, 'r') as tarfile:
 		with pytest.raises(FileNotFoundError, match="foo.py"):
@@ -37,11 +38,12 @@ def test_extractfile(example_tarfile: PathPlus):
 
 def test_read_text(example_tarfile: PathPlus):
 	with TarFile.open(example_tarfile, 'r') as tarfile:
-		assert tarfile.read_text("text_file.md") == "# Example\n\nThis is an example text file"
+		assert tarfile.read_text("text_file.md") == "# Example\r\n\r\nThis is an example text file"
+		assert tarfile.read_text("text_file.md", normalize_nl=True) == "# Example\n\nThis is an example text file"
 
 	with TarFile.open(example_tarfile, 'r') as tarfile:
 		info = tarfile.getmember("text_file.md")
-		assert tarfile.read_text(info) == "# Example\n\nThis is an example text file"
+		assert tarfile.read_text(info) == "# Example\r\n\r\nThis is an example text file"
 
 
 def test_write_file(example_tarfile: PathPlus, tmp_pathplus: PathPlus):
@@ -67,11 +69,11 @@ def test_write_file(example_tarfile: PathPlus, tmp_pathplus: PathPlus):
 
 def test_read_bytes(example_tarfile: PathPlus):
 	with TarFile.open(example_tarfile, 'r') as tarfile:
-		assert tarfile.read_bytes("text_file.md") == b"# Example\n\nThis is an example text file"
+		assert tarfile.read_bytes("text_file.md") == b"# Example\r\n\r\nThis is an example text file"
 
 	with TarFile.open(example_tarfile, 'r') as tarfile:
 		info = tarfile.getmember("text_file.md")
-		assert tarfile.read_bytes(info) == b"# Example\n\nThis is an example text file"
+		assert tarfile.read_bytes(info) == b"# Example\r\n\r\nThis is an example text file"
 
 
 def test_archive_regression(example_tarfile: PathPlus, archive_regression: ArchiveFileRegressionFixture):
