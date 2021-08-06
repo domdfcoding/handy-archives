@@ -94,9 +94,9 @@ class AbstractTestsWithSourceFile:
 			zipfp.write(tmpdir / TESTFN, "another.name")
 			zipfp.write(tmpdir / TESTFN, TESTFN)
 			zipfp.writestr("strfile", self.data)
-			with zipfp.open("written-open-w", mode='w') as f:
+			with zipfp.open("written-open-w", mode='w') as fp:
 				for line in self.line_gen:
-					f.write(line)
+					fp.write(line)
 
 	def zip_test(self, f, tmpdir, compression, compresslevel=None):
 		self.make_test_archive(f, tmpdir, compression, compresslevel)
@@ -330,11 +330,12 @@ class AbstractTestsWithSourceFile:
 						assert zipline == line
 
 	def test_low_compression(self, testfn: PathPlus, testfn2: PathPlus):
+		# Check for cases where compressed data is larger than original.
+
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
 
-		"Check for cases where compressed data is larger than original."
 		# Create the ZIP archive
 		with ZipFile(testfn2, 'w', self.compression) as zipfp:
 			zipfp.writestr("strfile", "12")
@@ -564,12 +565,13 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 		with ZipFile(testfn, 'r', zipfile.ZIP_STORED) as zipfp:
 			assert zipfp.namelist() == ["absolute"]
 
-	def test_append_to_zip_file(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
+	def test_append_to_zip_file(self, testfn: PathPlus, testfn2: PathPlus):
+		# Test appending to an existing zipfile.
+
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
 
-		"Test appending to an existing zipfile."
 		with ZipFile(testfn2, 'w', zipfile.ZIP_STORED) as zipfp:
 			zipfp.write(testfn, TESTFN)
 
@@ -577,12 +579,13 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 			zipfp.writestr("strfile", self.data)
 			assert zipfp.namelist() == [TESTFN, "strfile"]
 
-	def test_append_to_non_zip_file(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
+	def test_append_to_non_zip_file(self, testfn: PathPlus, testfn2: PathPlus):
+		# Test appending to an existing file that is not a zipfile.
+
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
 
-		"Test appending to an existing file that is not a zipfile."
 		# NOTE: this test fails if len(d) < 22 because of the first
 		# line "fpin.seek(-22, 2)" in _EndRecData
 		data = b'I am not a ZipFile!' * 10
@@ -604,7 +607,7 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 			assert zipfp.namelist() == [TESTFN]
 			assert zipfp.read(TESTFN) == self.data
 
-	def test_read_concatenated_zip_file(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
+	def test_read_concatenated_zip_file(self, testfn: PathPlus):
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
@@ -622,7 +625,7 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 			assert zipfp.namelist() == [TESTFN]
 			assert zipfp.read(TESTFN) == self.data
 
-	def test_append_to_concatenated_zip_file(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
+	def test_append_to_concatenated_zip_file(self, testfn: PathPlus, testfn2: PathPlus):
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
@@ -648,7 +651,7 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 			assert zipfp.read(TESTFN) == self.data
 			assert zipfp.read("strfile") == self.data
 
-	def test_ignores_newline_at_end(self, tmp_pathplus: PathPlus, testfn: PathPlus, testfn2: PathPlus):
+	def test_ignores_newline_at_end(self, tmp_pathplus: PathPlus, testfn: PathPlus):
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
@@ -788,11 +791,12 @@ class TestDeflateTestsWithSourceFile(AbstractTestsWithSourceFile):
 	compression = zipfile.ZIP_DEFLATED
 
 	def test_per_file_compression(self, tmp_pathplus: PathPlus, testfn: PathPlus):
+		# Check that files within a Zip archive can have different compression options.
+
 		# Make a source file with some lines
 		with open(testfn, "wb") as fp:
 			fp.write(self.data)
-		"""Check that files within a Zip archive can have different
-		compression options."""
+
 		with ZipFile(tmp_pathplus / TESTFN2, 'w') as zipfp:
 			zipfp.write(testfn, "storeme", zipfile.ZIP_STORED)
 			zipfp.write(testfn, "deflateme", zipfile.ZIP_DEFLATED)
@@ -1807,9 +1811,10 @@ class TestsOther:
 		with ZipFile(testfn, 'r') as zipf:
 			assert zipf.comment == b"this is a comment"
 
-	def test_empty_zipfile(self, tmp_pathplus: PathPlus, testfn: PathPlus):
+	def test_empty_zipfile(self, testfn: PathPlus):
 		# Check that creating a file in 'w' or 'a' mode and closing without
 		# adding any files to the archives creates a valid empty ZIP file
+
 		zipf = ZipFile(testfn, mode='w')
 		zipf.close()
 		try:
@@ -1824,12 +1829,13 @@ class TestsOther:
 		except:
 			pytest.fail("Unable to create empty ZIP file in 'a' mode")
 
-	def test_open_empty_file(self, tmp_pathplus: PathPlus, testfn: PathPlus):
+	def test_open_empty_file(self, testfn: PathPlus):
 		# Issue 1710703: Check that opening a file with less than 22 bytes
-		# raises a BadZipFile exception (rather than the previously unhelpful
-		# OSError)
-		f = open(testfn, 'w', encoding="utf-8")
-		f.close()
+		# raises a BadZipFile exception (rather than the previously unhelpful OSError)
+
+		with open(testfn, 'w', encoding="utf-8") as f:
+			pass
+
 		with pytest.raises(zipfile.BadZipFile):
 			ZipFile(testfn, 'r')
 
