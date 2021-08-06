@@ -11,6 +11,7 @@ import sys
 import tarfile
 import unittest.mock
 from collections.abc import Callable
+from contextlib import suppress
 from hashlib import sha256
 from random import Random
 from test.support import findfile, gc_collect, swap_attr
@@ -1130,7 +1131,7 @@ class TestReadPax(LongnameTest, ReadTest):
 			assert tarinfo.uid == 123
 			assert tarinfo.gid == 123
 			assert tarinfo.mtime == 1041808783.0
-			assert type(tarinfo.mtime) == float
+			assert type(tarinfo.mtime) is float  # pylint: disable=unidiomatic-typecheck
 			assert float(tarinfo.pax_headers["atime"]) == 1041808783.0
 			assert float(tarinfo.pax_headers["ctime"]) == 1041808783.0
 		finally:
@@ -1831,8 +1832,8 @@ class TestWritePax(TestWriteGNU):
 				assert tar.getmembers()[0].pax_headers == pax_headers
 				# Test if all the fields are strings.
 				for key, val in tar.pax_headers.items():
-					assert type(key) is not bytes
-					assert type(val) is not bytes
+					assert type(key) is not bytes  # pylint: disable=unidiomatic-typecheck
+					assert type(val) is not bytes  # pylint: disable=unidiomatic-typecheck
 					if key in tarfile.PAX_NUMBER_FIELDS:
 						try:
 							tarfile.PAX_NUMBER_FIELDS[key](val)
@@ -1922,10 +1923,10 @@ class UnicodeTest:
 		tar = TarFile.open(tarname, 'r', encoding="iso8859-1", errors="strict")
 		try:
 			for t in tar:
-				assert type(t.name) is str
-				assert type(t.linkname) is str
-				assert type(t.uname) is str
-				assert type(t.gname) is str
+				assert type(t.name) is str  # pylint: disable=unidiomatic-typecheck
+				assert type(t.linkname) is str  # pylint: disable=unidiomatic-typecheck
+				assert type(t.uname) is str  # pylint: disable=unidiomatic-typecheck
+				assert type(t.gname) is str  # pylint: disable=unidiomatic-typecheck
 		finally:
 			tar.close()
 
@@ -2300,11 +2301,10 @@ class TestContextManager:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 
-			try:
+			with suppress(Exception):
 				with TarFile.open(tmpname, 'w') as tar:
 					raise Exception
-			except:
-				pass
+
 			assert os.path.getsize(tmpname) == 0, "context manager wrote an end-of-archive block"
 			assert tar.closed, "context manager failed"
 
@@ -2317,6 +2317,7 @@ class TestContextManager:
 
 			with TarFile.open(tmpname, 'w'):
 				pass
+
 			assert os.path.getsize(tmpname) != 0, "context manager wrote no end-of-archive block"
 
 	def test_fileobj(self):
@@ -2327,11 +2328,11 @@ class TestContextManager:
 			tmpname = tmpdir / "tmp.tar"
 
 			with open(tmpname, "wb") as fobj:
-				try:
+
+				with suppress(Exception):
 					with TarFile.open(fileobj=fobj, mode='w') as tar:
 						raise Exception
-				except:
-					pass
+
 				assert not fobj.closed, "external file object was closed"
 				assert tar.closed, "context manager failed"
 
