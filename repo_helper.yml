@@ -59,3 +59,6 @@ classifiers:
  - 'Topic :: Software Development :: Libraries :: Python Modules'
  - "Topic :: System :: Archiving"
  - "Topic :: System :: Archiving :: Compression"
+
+exclude_files:
+ - conda_actions
