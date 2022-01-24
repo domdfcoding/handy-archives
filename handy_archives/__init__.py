@@ -193,7 +193,7 @@ class TarFile(tarfile.TarFile):
 		with open(filename, "rb") as f:
 			self.addfile(tarinfo, f)
 
-	def __enter__(self: _Self) -> _Self:  # noqa: D102
+	def __enter__(self: _Self) -> _Self:
 		return super().__enter__()  # type: ignore
 
 	@classmethod  # noqa: A003  # pylint: disable=redefined-builtin
@@ -317,7 +317,7 @@ class ZipFile(zipfile.ZipFile):
 
 		zinfo = zipfile.ZipInfo(arcname, mtime.timetuple()[:6])
 
-		zinfo.compress_type = self.compression  # type: ignore
+		zinfo.compress_type = self.compression
 
 		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
 			zinfo._compresslevel = self.compresslevel
