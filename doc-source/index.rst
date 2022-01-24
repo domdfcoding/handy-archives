@@ -60,7 +60,8 @@ handy-archives
 		:workflow: mypy
 		:alt: mypy status
 
-	.. |requires| requires-io-shield::
+	.. |requires| image:: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/badge.svg
+		:target: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/
 		:alt: Requirements Status
 
 	.. |coveralls| coveralls-shield::
@@ -113,7 +114,7 @@ handy-archives
 		:last-commit:
 		:alt: GitHub last commit
 
-	.. |maintained| maintained-shield:: 2021
+	.. |maintained| maintained-shield:: 2022
 		:alt: Maintenance
 
 	.. |pypi-downloads| pypi-shield::

@@ -58,8 +58,8 @@ handy-archives
 	:target: https://github.com/domdfcoding/handy-archives/actions?query=workflow%3A%22mypy%22
 	:alt: mypy status
 
-.. |requires| image:: https://requires.io/github/domdfcoding/handy-archives/requirements.svg?branch=master
-	:target: https://requires.io/github/domdfcoding/handy-archives/requirements/?branch=master
+.. |requires| image:: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/badge.svg
+	:target: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/
 	:alt: Requirements Status
 
 .. |coveralls| image:: https://img.shields.io/coveralls/github/domdfcoding/handy-archives/master?logo=coveralls
@@ -109,7 +109,7 @@ handy-archives
 	:target: https://github.com/domdfcoding/handy-archives/commit/master
 	:alt: GitHub last commit
 
-.. |maintained| image:: https://img.shields.io/maintenance/yes/2021
+.. |maintained| image:: https://img.shields.io/maintenance/yes/2022
 	:alt: Maintenance
 
 .. |pypi-downloads| image:: https://img.shields.io/pypi/dm/handy-archives
