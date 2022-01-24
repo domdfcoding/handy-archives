@@ -4,7 +4,7 @@ build-backend = "flit_core.buildapi"
 
 [project]
 name = "handy-archives"
-version = "0.1.0"
+version = "0.1.1"
 description = "Some handy archive helpers for Python."
 readme = "README.rst"
 requires-python = ">=3.6.1"
