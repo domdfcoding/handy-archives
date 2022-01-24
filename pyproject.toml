@@ -7,9 +7,8 @@ name = "handy-archives"
 version = "0.1.0"
 description = "Some handy archive helpers for Python."
 readme = "README.rst"
-keywords = [ "archive", "shutil", "tar", "zip",]
-dynamic = []
 requires-python = ">=3.6.1"
+keywords = [ "archive", "shutil", "tar", "zip",]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -29,6 +28,7 @@ classifiers = [
     "Typing :: Typed",
 ]
 dependencies = [ "domdf-python-tools>=3.1.0",]
+dynamic = []
 
 [[project.authors]]
 name = "Dominic Davis-Foster"
