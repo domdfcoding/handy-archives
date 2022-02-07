@@ -1,7 +1,7 @@
 # stdlib
 import os
 import unittest
-from typing import no_type_check
+from typing import Callable, no_type_check
 
 
 @no_type_check
@@ -44,7 +44,7 @@ def requires_lzma(reason="requires lzma"):
 	return unittest.skipUnless(lzma, reason)
 
 
-def skip_unless_symlink(test):
+def skip_unless_symlink(test: Callable):
 	"""
 	Skip decorator for tests that require symlinks.
 	"""

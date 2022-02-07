@@ -33,7 +33,7 @@ import shutil
 import sys
 import tarfile
 import zipfile
-from typing import IO, Optional, Type, TypeVar, Union
+from typing import IO, Optional, Type, TypeVar, Union, cast
 
 # 3rd party
 from domdf_python_tools.typing import PathLike
@@ -56,7 +56,11 @@ if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore
 			)
 
 
-def unpack_archive(filename, extract_dir=None, format=None):  # noqa: A002  # pylint: disable=redefined-builtin
+def unpack_archive(
+		filename: PathLike,
+		extract_dir: Optional[PathLike] = None,
+		format: Optional[str] = None,  # noqa: A002  # pylint: disable=redefined-builtin
+		):
 	"""
 	Unpack an archive.
 
@@ -149,7 +153,12 @@ class TarFile(tarfile.TarFile):
 		with self.extractfile(member) as fd:
 			return fd.read()
 
-	def write_file(self, filename, arcname=None, mtime: Optional[datetime.datetime] = None):
+	def write_file(
+			self,
+			filename: PathLike,
+			arcname: Optional[PathLike] = None,
+			mtime: Optional[datetime.datetime] = None,
+			):
 		"""
 		Add the file ``filename`` to the archive under the name ``arcname``.
 
@@ -182,7 +191,7 @@ class TarFile(tarfile.TarFile):
 		self._dbg(1, filename)  # type: ignore
 
 		# Create a TarInfo object from the file.
-		tarinfo = self.gettarinfo(filename, arcname)
+		tarinfo = self.gettarinfo(os.fspath(filename), arcname)
 		tarinfo.mtime = mtime.timestamp()  # type: ignore
 
 		if tarinfo is None:  # pragma: no cover
@@ -197,12 +206,12 @@ class TarFile(tarfile.TarFile):
 		return super().__enter__()  # type: ignore
 
 	@classmethod  # noqa: A003  # pylint: disable=redefined-builtin
-	def open(  # noqa: D102
-			cls: Type[_Self],
-			name=None,
-			*args,
-			**kwargs,
-			) -> _Self:
+	def open(  # type: ignore[override]  # noqa: D102
+		cls: Type[_Self],
+		name: Optional[PathLike] = None,
+		*args,
+		**kwargs,
+		) -> _Self:
 
 		if name is not None:
 			name = os.fspath(name)
@@ -292,7 +301,12 @@ class ZipFile(zipfile.ZipFile):
 		with self.extractfile(member, pwd=pwd) as fd:
 			return fd.read()
 
-	def write_file(self, filename, arcname=None, mtime: Optional[datetime.datetime] = None):
+	def write_file(
+			self,
+			filename: PathLike,
+			arcname: Optional[PathLike] = None,
+			mtime: Optional[datetime.datetime] = None,
+			):
 		"""
 		Put the bytes from ``filename`` into the archive under the name ``arcname``.
 
@@ -312,7 +326,9 @@ class ZipFile(zipfile.ZipFile):
 		if mtime is None:
 			return self.write(filename, arcname)
 
-		if isinstance(arcname, os.PathLike):
+		if arcname is None:
+			arcname = os.fspath(filename)
+		else:
 			arcname = os.fspath(arcname)
 
 		zinfo = zipfile.ZipInfo(arcname, mtime.timetuple()[:6])
@@ -340,7 +356,7 @@ def is_tarfile(name: Union[PathLike, IO[bytes]]):
 		if hasattr(name, "read"):
 			t = TarFile.open(fileobj=name)
 		else:
-			t = TarFile.open(name)
+			t = TarFile.open(cast(PathLike, name))
 		t.close()
 		return True
 

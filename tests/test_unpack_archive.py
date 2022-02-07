@@ -88,7 +88,11 @@ class TestArchives(unittest.TestCase):
 		self.check_unpack_archive_with_converter(format, pathlib.Path)
 		self.check_unpack_archive_with_converter(format, FakePath)
 
-	def check_unpack_archive_with_converter(self, format, converter):  # noqa: A002  # pylint: disable=redefined-builtin
+	def check_unpack_archive_with_converter(
+			self,
+			format,  # noqa: A002  # pylint: disable=redefined-builtin
+			converter,
+			):
 		base_dir = "dist"
 
 		with TemporaryPathPlus() as root_dir:
