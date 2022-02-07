@@ -331,12 +331,20 @@ class ZipFile(zipfile.ZipFile):
 		else:
 			arcname = os.fspath(arcname)
 
+		arcname = os.path.normpath(os.path.splitdrive(arcname)[1])
+		while arcname[0] in (os.sep, os.altsep):
+			arcname = arcname[1:]
+
 		zinfo = zipfile.ZipInfo(arcname, mtime.timetuple()[:6])
 
 		zinfo.compress_type = self.compression
 
 		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
 			zinfo._compresslevel = self.compresslevel
+
+		st = os.stat(filename)
+		zinfo.external_attr = (st.st_mode & 0xFFFF) << 16  # Unix attributes
+		zinfo.file_size = st.st_size
 
 		with open(filename, "rb") as src, self.open(zinfo, 'w') as dest:
 			shutil.copyfileobj(src, dest, 1024 * 8)
