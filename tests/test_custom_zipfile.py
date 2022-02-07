@@ -114,7 +114,7 @@ def test_write_file_arcname_none(example_zipfile: PathPlus, tmp_pathplus: PathPl
 
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		# With arcname=None the file has the same path as on the filesystem.
-		assert zip_file.read_text(str(my_file)[1:]) == "# Example2\n\nThis is another example text file"
+		assert zip_file.read_text(my_file.as_posix()[1:]) == "# Example2\n\nThis is another example text file"
 
 
 def test_read_bytes(example_zipfile: PathPlus):
