@@ -1,5 +1,6 @@
 # stdlib
 import datetime
+import os
 from typing import IO
 
 # 3rd party
@@ -114,7 +115,9 @@ def test_write_file_arcname_none(example_zipfile: PathPlus, tmp_pathplus: PathPl
 
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		# With arcname=None the file has the same path as on the filesystem.
-		assert zip_file.read_text(str(my_file)[1:]) == "# Example2\n\nThis is another example text file"
+		assert zip_file.read_text(
+				os.path.splitdrive(my_file.as_posix())[1][1:]
+				) == "# Example2\n\nThis is another example text file"
 
 	my_file = tmp_pathplus / "my_file.txt"
 	my_file.write_text("# Example2\n\nThis is another example text file")
@@ -125,7 +128,9 @@ def test_write_file_arcname_none(example_zipfile: PathPlus, tmp_pathplus: PathPl
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		# breakpoint()
 		# With arcname=None the file has the same path as on the filesystem.
-		assert zip_file.read_text(str(my_file)[1:]) == "# Example2\n\nThis is another example text file"
+		assert zip_file.read_text(
+				os.path.splitdrive(my_file.as_posix())[1][1:]
+				) == "# Example2\n\nThis is another example text file"
 
 
 def test_read_bytes(example_zipfile: PathPlus):
