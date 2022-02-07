@@ -105,6 +105,18 @@ def test_write_file(example_zipfile: PathPlus, tmp_pathplus: PathPlus):
 		assert zip_file.namelist() == ["my_file.txt", "my_file2.md", "foo.py"]
 
 
+def test_write_file_arcname_none(example_zipfile: PathPlus, tmp_pathplus: PathPlus):
+	my_file = tmp_pathplus / "my_file.txt"
+	my_file.write_text("# Example2\n\nThis is another example text file")
+
+	with ZipFile(example_zipfile, 'w') as zip_file:
+		zip_file.write_file(my_file, arcname=None)
+
+	with ZipFile(example_zipfile, 'r') as zip_file:
+		# With arcname=None the file has the same path as on the filesystem.
+		assert zip_file.read_text(str(my_file)[1:]) == "# Example2\n\nThis is another example text file"
+
+
 def test_read_bytes(example_zipfile: PathPlus):
 	with ZipFile(example_zipfile, 'r') as zip_file:
 		assert zip_file.read_bytes("text_file.md") == b"# Example\r\n\r\nThis is an example text file"
