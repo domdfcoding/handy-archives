@@ -295,8 +295,10 @@ class TestList(ReadTest):
 			return s.encode("ascii", "backslashreplace")
 
 		assert conv(b'ustar/umlauts-\xc4\xd6\xdc\xe4\xf6\xfc\xdf') in out
-		assert conv(b'misc/regtype-hpux-signed-chksum-' b'\xc4\xd6\xdc\xe4\xf6\xfc\xdf') in out
-		assert conv(b'misc/regtype-old-v7-signed-chksum-' b'\xc4\xd6\xdc\xe4\xf6\xfc\xdf') in out
+		assert conv(b'misc/regtype-hpux-signed-chksum-'
+					b'\xc4\xd6\xdc\xe4\xf6\xfc\xdf') in out
+		assert conv(b'misc/regtype-old-v7-signed-chksum-'
+					b'\xc4\xd6\xdc\xe4\xf6\xfc\xdf') in out
 		assert conv(b'pax/bad-pax-\xe4\xf6\xfc') in out
 		assert conv(b'pax/hdrcharset-\xe4\xf6\xfc') in out
 		# Make sure it prints files separated by one newline without any
@@ -305,7 +307,8 @@ class TestList(ReadTest):
 		# ustar/conttype
 		# ustar/regtype
 		# ...
-		assert re.search(br'ustar/conttype ?\r?\n' br'ustar/regtype ?\r?\n', out)
+		assert re.search(br'ustar/conttype ?\r?\n'
+							br'ustar/regtype ?\r?\n', out)
 		# Make sure it does not print the source of link without verbose flag
 		assert b'link to' not in out
 		assert b'->' not in out
