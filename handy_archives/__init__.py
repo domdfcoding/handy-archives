@@ -48,11 +48,11 @@ __all__ = ["unpack_archive", "TarFile", "ZipFile", "is_tarfile"]
 
 _Self = TypeVar("_Self")
 
-if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore
+if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore[attr-defined]
 	shutil.register_unpack_format(
 			name="wheel",
 			extensions=[".whl"],
-			function=shutil._unpack_zipfile,  # type: ignore
+			function=shutil._unpack_zipfile,  # type: ignore[attr-defined]
 			)
 
 
@@ -60,7 +60,7 @@ def unpack_archive(
 		filename: PathLike,
 		extract_dir: Optional[PathLike] = None,
 		format: Optional[str] = None,  # noqa: A002  # pylint: disable=redefined-builtin
-		):
+		) -> None:
 	"""
 	Unpack an archive.
 
@@ -107,7 +107,7 @@ class TarFile(tarfile.TarFile):
 		"""
 
 		if isinstance(member, str):
-			tarinfo = self._getmember(member)  # type: ignore
+			tarinfo = self._getmember(member)  # type: ignore[attr-defined]
 			if tarinfo is None:
 				raise FileNotFoundError(member)
 			else:
@@ -158,7 +158,7 @@ class TarFile(tarfile.TarFile):
 			filename: PathLike,
 			arcname: Optional[PathLike] = None,
 			mtime: Optional[datetime.datetime] = None,
-			):
+			) -> None:
 		"""
 		Add the file ``filename`` to the archive under the name ``arcname``.
 
@@ -181,18 +181,18 @@ class TarFile(tarfile.TarFile):
 		if isinstance(arcname, os.PathLike):
 			arcname = os.fspath(arcname)
 
-		self._check("awx")  # type: ignore
+		self._check("awx")  # type: ignore[attr-defined]
 
 		# Skip if somebody tries to archive the archive...
 		if self.name is not None and os.path.abspath(filename) == self.name:  # pragma: no cover
-			self._dbg(2, "tarfile: Skipped %r" % filename)  # type: ignore
+			self._dbg(2, "tarfile: Skipped %r" % filename)  # type: ignore[attr-defined]
 			return
 
-		self._dbg(1, filename)  # type: ignore
+		self._dbg(1, filename)  # type: ignore[attr-defined]
 
 		# Create a TarInfo object from the file.
 		tarinfo = self.gettarinfo(os.fspath(filename), arcname)
-		tarinfo.mtime = mtime.timestamp()  # type: ignore
+		tarinfo.mtime = mtime.timestamp()  # type: ignore[assignment]
 
 		if tarinfo is None:  # pragma: no cover
 			self._dbg(1, f"tarfile: Unsupported type {filename!r}")
@@ -203,7 +203,7 @@ class TarFile(tarfile.TarFile):
 			self.addfile(tarinfo, f)
 
 	def __enter__(self: _Self) -> _Self:
-		return super().__enter__()  # type: ignore
+		return super().__enter__()  # type: ignore[misc]
 
 	@classmethod  # noqa: A003  # pylint: disable=redefined-builtin
 	def open(  # type: ignore[override]  # noqa: D102
@@ -216,7 +216,7 @@ class TarFile(tarfile.TarFile):
 		if name is not None:
 			name = os.fspath(name)
 
-		return super().open(  # type: ignore
+		return super().open(  # type: ignore[misc]
 				name,
 				*args,
 				**kwargs,
@@ -306,7 +306,7 @@ class ZipFile(zipfile.ZipFile):
 			filename: PathLike,
 			arcname: Optional[PathLike] = None,
 			mtime: Optional[datetime.datetime] = None,
-			):
+			) -> None:
 		"""
 		Put the bytes from ``filename`` into the archive under the name ``arcname``.
 
@@ -317,7 +317,7 @@ class ZipFile(zipfile.ZipFile):
 		:no-default mtime:
 		"""
 
-		if self._writing:  # type: ignore
+		if self._writing:  # type: ignore[attr-defined]
 			raise ValueError("Can't write to ZIP archive while an open writing handle exists")
 
 		if not os.path.isfile(filename):
@@ -350,10 +350,10 @@ class ZipFile(zipfile.ZipFile):
 			shutil.copyfileobj(src, dest, 1024 * 8)
 
 	def __enter__(self: _Self) -> _Self:
-		return super().__enter__()  # type: ignore
+		return super().__enter__()  # type: ignore[misc]
 
 
-def is_tarfile(name: Union[PathLike, IO[bytes]]):
+def is_tarfile(name: Union[PathLike, IO[bytes]]) -> bool:
 	"""
 	Return :py:obj:`True` if ``name`` points to a tar archive that :mod:`tarfile` can handle, else return :py:obj:`False`.
 
@@ -372,7 +372,7 @@ def is_tarfile(name: Union[PathLike, IO[bytes]]):
 		return False
 
 
-def _normalize_nl(text: str, enable: bool):
+def _normalize_nl(text: str, enable: bool) -> str:
 	if enable:
 		return text.replace("\r\n", '\n').replace('\r', '\n')
 	else:

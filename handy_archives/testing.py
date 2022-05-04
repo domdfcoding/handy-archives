@@ -48,7 +48,7 @@ class ArchiveFileRegressionFixture(AdvancedFileRegressionFixture):
 	Class for performing regression checks on files in ``tar`` and ``zip`` archives.
 	"""
 
-	def check_archive(self, archive: Union[TarFile, ZipFile], filename: str, **kwargs):
+	def check_archive(self, archive: Union[TarFile, ZipFile], filename: str, **kwargs) -> None:
 		r"""
 		Checks a text file in ``archive`` against a previously recorded version, or generates a new file.
 
@@ -63,7 +63,7 @@ class ArchiveFileRegressionFixture(AdvancedFileRegressionFixture):
 		kwargs.setdefault("extension", os.path.splitext(filename)[-1] or None)
 		self.check(archive.read_text(filename), **kwargs)
 
-	def check_archive_binary(self, archive: Union[TarFile, ZipFile], filename: str, **kwargs):
+	def check_archive_binary(self, archive: Union[TarFile, ZipFile], filename: str, **kwargs) -> None:
 		r"""
 		Checks a binary file in ``archive`` against a previously recorded version, or generates a new file.
 
