@@ -355,10 +355,11 @@ class ZipFile(zipfile.ZipFile):
 
 def is_tarfile(name: Union[PathLike, IO[bytes]]) -> bool:
 	"""
-	Return :py:obj:`True` if ``name`` points to a tar archive that :mod:`tarfile` can handle, else return :py:obj:`False`.
+	Return :py:obj:`True` if ``name`` points to a tar archive that :mod:`tarfile` can handle,
+	else return :py:obj:`False`.
 
 	:param name: A string, file, or file-like object.
-	"""
+	"""  # noqa: D400
 
 	try:
 		if hasattr(name, "read"):
