@@ -60,7 +60,7 @@ def unpack_archive(
 		filename: PathLike,
 		extract_dir: Optional[PathLike] = None,
 		format: Optional[str] = None,  # noqa: A002  # pylint: disable=redefined-builtin
-		):
+		) -> None:
 	"""
 	Unpack an archive.
 
@@ -158,7 +158,7 @@ class TarFile(tarfile.TarFile):
 			filename: PathLike,
 			arcname: Optional[PathLike] = None,
 			mtime: Optional[datetime.datetime] = None,
-			):
+			) -> None:
 		"""
 		Add the file ``filename`` to the archive under the name ``arcname``.
 
@@ -306,7 +306,7 @@ class ZipFile(zipfile.ZipFile):
 			filename: PathLike,
 			arcname: Optional[PathLike] = None,
 			mtime: Optional[datetime.datetime] = None,
-			):
+			) -> None:
 		"""
 		Put the bytes from ``filename`` into the archive under the name ``arcname``.
 
@@ -353,7 +353,7 @@ class ZipFile(zipfile.ZipFile):
 		return super().__enter__()  # type: ignore[misc]
 
 
-def is_tarfile(name: Union[PathLike, IO[bytes]]):
+def is_tarfile(name: Union[PathLike, IO[bytes]]) -> bool:
 	"""
 	Return :py:obj:`True` if ``name`` points to a tar archive that :mod:`tarfile` can handle, else return :py:obj:`False`.
 
@@ -372,7 +372,7 @@ def is_tarfile(name: Union[PathLike, IO[bytes]]):
 		return False
 
 
-def _normalize_nl(text: str, enable: bool):
+def _normalize_nl(text: str, enable: bool) -> str:
 	if enable:
 		return text.replace("\r\n", '\n').replace('\r', '\n')
 	else:
