@@ -843,17 +843,21 @@ class TestDetectRead(TarTest):
 	prefix = "r:"
 
 	def _testfunc_file(self, name, mode):
+		tar = None
 		try:
 			tar = TarFile.open(name, mode)
 		finally:
-			tar.close()
+			if tar is not None:
+				tar.close()
 
 	def _testfunc_fileobj(self, name, mode):
+		tar = None
 		try:
 			with open(name, "rb") as f:
 				tar = TarFile.open(name, mode, fileobj=f)
 		finally:
-			tar.close()
+			if tar is not None:
+				tar.close()
 
 	def _test_modes(self, testfunc, tmpdir):
 		if self.suffix:
