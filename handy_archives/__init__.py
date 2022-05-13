@@ -29,14 +29,12 @@ Some handy archive helpers for Python.
 # stdlib
 import datetime
 import os
+import pathlib
 import shutil
 import sys
 import tarfile
 import zipfile
 from typing import IO, Optional, Type, TypeVar, Union, cast
-
-# 3rd party
-from domdf_python_tools.typing import PathLike
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2021 Dominic Davis-Foster"
@@ -47,6 +45,7 @@ __email__: str = "dominic@davis-foster.co.uk"
 __all__ = ["unpack_archive", "TarFile", "ZipFile", "is_tarfile"]
 
 _Self = TypeVar("_Self")
+PathLike = Union[str, pathlib.Path, os.PathLike]
 
 if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore[attr-defined]
 	shutil.register_unpack_format(
@@ -340,7 +339,7 @@ class ZipFile(zipfile.ZipFile):
 		zinfo.compress_type = self.compression
 
 		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
-			zinfo._compresslevel = self.compresslevel
+			zinfo._compresslevel = self.compresslevel  # type: ignore[attr-defined]
 
 		st = os.stat(filename)
 		zinfo.external_attr = (st.st_mode & 0xFFFF) << 16  # Unix attributes
