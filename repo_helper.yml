@@ -33,7 +33,7 @@ conda_channels:
 
 sphinx_conf_epilogue:
  - nitpicky = True
- - autosummary_col_type = "\Xx"
+ - needspace_amount = r"5\baselineskip"
 
 keywords:
  - archive
@@ -42,9 +42,8 @@ keywords:
  - shutil
 
 extra_sphinx_extensions:
- - sphinx_toolbox_experimental.needspace
- - sphinx_toolbox_experimental.succinct_seealso
- - local_extension
+ - sphinx_toolbox.latex.succinct_seealso
+ - sphinx_toolbox.more_autosummary.column_widths
 
 extras_require:
  testing:

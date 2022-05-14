@@ -80,4 +80,4 @@ def setup(app):
 
 
 nitpicky = True
-autosummary_col_type = "\\Xx"
+needspace_amount = r"5\baselineskip"

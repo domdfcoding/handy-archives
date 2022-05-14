@@ -101,7 +101,6 @@ class TarFile(tarfile.TarFile):
 		:param member: A filename or a :class:`tarfile.TarInfo` object.
 
 		If ``member`` is a regular file or a link, an :class:`io.BufferedReader` object is returned.
-
 		Otherwise :exc:`FileNotFoundError` is raised.
 		"""
 
@@ -224,7 +223,7 @@ class TarFile(tarfile.TarFile):
 
 class ZipFile(zipfile.ZipFile):
 	"""
-	Subclass of :class:`tarfile.TarFile` with additional methods.
+	Subclass of :class:`zipfile.ZipFile` with additional methods.
 	"""
 
 	def extractfile(
