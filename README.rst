@@ -101,7 +101,7 @@ handy-archives
 .. |language| image:: https://img.shields.io/github/languages/top/domdfcoding/handy-archives
 	:alt: GitHub top language
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/domdfcoding/handy-archives/v0.1.3
+.. |commits-since| image:: https://img.shields.io/github/commits-since/domdfcoding/handy-archives/v0.1.4
 	:target: https://github.com/domdfcoding/handy-archives/pulse
 	:alt: GitHub commits since tagged version
 
