@@ -60,8 +60,8 @@ handy-archives
 		:workflow: mypy
 		:alt: mypy status
 
-	.. |requires| image:: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/badge.svg
-		:target: https://dependency-dash.herokuapp.com/github/domdfcoding/handy-archives/
+	.. |requires| image:: https://dependency-dash.repo-helper.uk/github/domdfcoding/handy-archives/badge.svg
+		:target: https://dependency-dash.repo-helper.uk/github/domdfcoding/handy-archives/
 		:alt: Requirements Status
 
 	.. |coveralls| coveralls-shield::
