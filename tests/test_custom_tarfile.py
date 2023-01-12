@@ -1,5 +1,6 @@
 # stdlib
 import datetime
+from typing import Iterator
 
 # 3rd party
 import pytest
@@ -11,7 +12,7 @@ from handy_archives.testing import ArchiveFileRegressionFixture
 
 
 @pytest.fixture()
-def example_tarfile(tmp_pathplus: PathPlus):
+def example_tarfile(tmp_pathplus: PathPlus) -> Iterator[PathPlus]:
 	with TarFile.open(tmp_pathplus / "example.tar", mode='w') as tarfile:
 
 		tarfile.add(PathPlus(__file__).parent / "Hams_Hall.jpg", arcname="Hams_Hall.jpg")

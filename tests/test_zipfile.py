@@ -22,7 +22,7 @@ import unittest.mock as mock
 import zipfile
 from tempfile import TemporaryFile
 from test.support import findfile
-from typing import no_type_check
+from typing import Iterator, no_type_check
 
 # 3rd party
 import pytest
@@ -1338,7 +1338,7 @@ class TestExtract:
 		with TemporaryPathPlus() as extdir:
 			self._test_extract_all_with_target(extdir, tmp_pathplus)
 
-	def check_file(self, filename, content):
+	def check_file(self, filename, content) -> None:
 		assert os.path.isfile(filename)
 		with open(filename, "rb") as f:
 			assert f.read() == content
@@ -2062,7 +2062,7 @@ class TestLzmaBadCrc(AbstractBadCrcTests):
 
 
 @pytest.fixture()
-def encrypted_zip(tmp_pathplus: PathPlus, testfn: PathPlus):
+def encrypted_zip(testfn: PathPlus) -> Iterator[ZipFile]:
 
 	data = (
 			b'PK\x03\x04\x14\x00\x01\x00\x00\x00n\x92i.#y\xef?&\x00\x00\x00\x1a\x00'
@@ -2082,7 +2082,7 @@ def encrypted_zip(tmp_pathplus: PathPlus, testfn: PathPlus):
 
 
 @pytest.fixture()
-def encrypted_zip2(tmp_pathplus: PathPlus, testfn: PathPlus):
+def encrypted_zip2(tmp_pathplus: PathPlus, testfn: PathPlus) -> Iterator[ZipFile]:
 	data2 = (
 			b'PK\x03\x04\x14\x00\t\x00\x08\x00\xcf}38xu\xaa\xb2\x14\x00\x00\x00\x00\x02'
 			b'\x00\x00\x04\x00\x15\x00zeroUT\t\x00\x03\xd6\x8b\x92G\xda\x8b\x92GUx\x04'
@@ -2109,7 +2109,7 @@ class TestDecryption:
 	plain = b'zipfile.py encryption test'
 	plain2 = b'\x00' * 512
 
-	def test_no_password(self, encrypted_zip, encrypted_zip2):
+	def test_no_password(self, encrypted_zip: ZipFile, encrypted_zip2: ZipFile):
 		# Reading the encrypted file without password
 		# must generate a RunTime exception
 		with pytest.raises(RuntimeError):
@@ -2117,7 +2117,7 @@ class TestDecryption:
 		with pytest.raises(RuntimeError):
 			encrypted_zip2.read("zero")
 
-	def test_bad_password(self, encrypted_zip, encrypted_zip2):
+	def test_bad_password(self, encrypted_zip: ZipFile, encrypted_zip2: ZipFile):
 		encrypted_zip.setpassword(b"perl")
 		with pytest.raises(RuntimeError):
 			encrypted_zip.read("test.txt")
@@ -2126,14 +2126,14 @@ class TestDecryption:
 			encrypted_zip2.read("zero")
 
 	@requires_zlib()
-	def test_good_password(self, encrypted_zip, encrypted_zip2):
+	def test_good_password(self, encrypted_zip: ZipFile, encrypted_zip2: ZipFile):
 		encrypted_zip.setpassword(b"python")
 		assert encrypted_zip.read("test.txt") == self.plain
 		encrypted_zip2.setpassword(b"12345")
 		assert encrypted_zip2.read("zero") == self.plain2
 
 	@no_type_check
-	def test_unicode_password(self, encrypted_zip, encrypted_zip2):
+	def test_unicode_password(self, encrypted_zip: ZipFile, encrypted_zip2: ZipFile):
 		with pytest.raises(TypeError):
 			encrypted_zip.setpassword("unicode")
 		with pytest.raises(TypeError):
@@ -2144,7 +2144,7 @@ class TestDecryption:
 			encrypted_zip.extract("test.txt", pwd="python")
 
 	@min_version(3.7)
-	def test_seek_tell(self, encrypted_zip, encrypted_zip2):
+	def test_seek_tell(self, encrypted_zip: ZipFile, encrypted_zip2: ZipFile):
 		encrypted_zip.setpassword(b"python")
 		txt = self.plain
 		test_word = b'encryption'
@@ -2185,19 +2185,19 @@ class TestDecryption:
 class AbstractTestsWithRandomBinaryFiles:
 
 	@classmethod
-	def setup_class(cls):
+	def setup_class(cls) -> None:
 		datacount = random.randint(16, 64) * 1024 + random.randint(1, 1024)
 		cls.data = b''.join(
 				struct.pack("<f", random.random() * random.randint(-1000, 1000)) for i in range(datacount)
 				)
 
-	def make_test_archive(self, f, tmpdir, compression):
+	def make_test_archive(self, f, tmpdir, compression) -> None:
 		# Create the ZIP archive
 		with ZipFile(f, 'w', compression) as zipfp:
 			zipfp.write(tmpdir / TESTFN, "another.name")
 			zipfp.write(tmpdir / TESTFN, TESTFN)
 
-	def zip_test(self, f, tmpdir, compression):
+	def zip_test(self, f, tmpdir: PathPlus, compression: int):
 		self.make_test_archive(f, tmpdir, compression)
 
 		# Read the ZIP archive
