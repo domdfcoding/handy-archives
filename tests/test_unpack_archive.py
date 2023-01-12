@@ -160,11 +160,11 @@ class TestArchives(unittest.TestCase):
 
 		# trying to register a .boo unpacker again
 		with pytest.raises(RegistryError):
-			register_unpack_format("Boo2", [".boo"], _boo)
+			register_unpack_format("Boo2", [".boo"], _boo)  # type: ignore[arg-type]
 
 		# should work now
 		unregister_unpack_format("Boo")
-		register_unpack_format("Boo2", [".boo"], _boo)
+		register_unpack_format("Boo2", [".boo"], _boo)  # type: ignore[arg-type]
 		assert ("Boo2", [".boo"], '') in get_unpack_formats()
 		assert ("Boo", [".boo"], '') not in get_unpack_formats()
 
