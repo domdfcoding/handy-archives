@@ -1485,11 +1485,13 @@ class TestsOther:
 			for fpath, fdata in SMALL_TEST_DATA:
 				zipfp.writestr(fpath, fdata)
 
+		# pylint: disable=used-before-assignment
 		try:
 			with ZipFile(tmp_pathplus / TESTFN2, 'r') as zipfp2:
 				raise zipfile.BadZipFile()
 		except zipfile.BadZipFile:
 			assert zipfp2.fp is None, "zipfp is not closed"
+		# pylint: enable=used-before-assignment
 
 	def test_unsupported_version(self):
 		# File has an extract_version of 120
@@ -1826,7 +1828,7 @@ class TestsOther:
 		zipf.close()
 		try:
 			ZipFile(testfn, mode='r')
-		except:
+		except Exception:
 			pytest.fail("Unable to create empty ZIP file in 'a' mode")
 
 	def test_open_empty_file(self, testfn: PathPlus):

@@ -61,13 +61,13 @@ if hasattr(tarfile, "FilterError"):  # pragma: nocover
 	from tarfile import tar_filter as tar_filter
 else:  # pragma: nocover
 
-	def fully_trusted_filter(member, dest_path):
+	def fully_trusted_filter(member, dest_path):  # noqa: MAN001,MAN002
 		return member
 
-	def tar_filter(member, dest_path):
+	def tar_filter(member, dest_path):  # noqa: MAN001,MAN002
 		return member
 
-	def data_filter(member, dest_path):
+	def data_filter(member, dest_path):  # noqa: MAN001,MAN002
 		return member
 
 
