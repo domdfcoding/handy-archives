@@ -34,7 +34,7 @@ import shutil
 import sys
 import tarfile
 import zipfile
-from typing import IO, Optional, Type, TypeVar, Union, cast
+from typing import IO, Callable, Iterable, Optional, Type, TypeVar, Union, cast
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2021 Dominic Davis-Foster"
@@ -53,6 +53,22 @@ if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore[attr-defined]
 			extensions=[".whl"],
 			function=shutil._unpack_zipfile,  # type: ignore[attr-defined]
 			)
+
+if hasattr(tarfile, "FilterError"):  # pragma: nocover
+	# stdlib
+	from tarfile import data_filter as data_filter
+	from tarfile import fully_trusted_filter as fully_trusted_filter
+	from tarfile import tar_filter as tar_filter
+else:  # pragma: nocover
+
+	def fully_trusted_filter(member, dest_path):
+		return member
+
+	def tar_filter(member, dest_path):
+		return member
+
+	def data_filter(member, dest_path):
+		return member
 
 
 def unpack_archive(
@@ -93,6 +109,41 @@ class TarFile(tarfile.TarFile):
 
 	closed: bool
 	offset: int
+
+	def extractall(
+			self,
+			path: PathLike = '.',
+			members: Optional[Iterable[tarfile.TarInfo]] = None,
+			*,
+			numeric_owner: bool = False,
+			filter: Optional[Callable] = None,
+			) -> None:  # pragma: nocover
+		"""
+		Wrapper around :meth:`tarfile.TarFile.extractall` with compatibility shim for :pep:`706` on unpatched Pythons.
+		"""
+
+		if hasattr(tarfile, "FilterError"):
+			return super().extractall(path, members, numeric_owner=numeric_owner, filter=filter)
+		else:
+			return super().extractall(path, members, numeric_owner=numeric_owner)
+
+	def extract(
+			self,
+			member: Union[str, tarfile.TarInfo],
+			path: PathLike = '',
+			set_attrs: bool = True,
+			*,
+			numeric_owner: bool = False,
+			filter: Optional[Callable] = None,
+			) -> None:  # pragma: nocover
+		"""
+		Wrapper around :meth:`tarfile.TarFile.extract` with compatibility shim for :pep:`706` on unpatched Pythons.
+		"""
+
+		if hasattr(tarfile, "FilterError"):
+			return super().extract(member, path, set_attrs, numeric_owner=numeric_owner, filter=filter)
+		else:
+			return super().extract(member, path, set_attrs, numeric_owner=numeric_owner)
 
 	def extractfile(self, member: Union[str, tarfile.TarInfo]) -> IO[bytes]:
 		"""
