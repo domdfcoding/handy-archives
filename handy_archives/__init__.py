@@ -34,7 +34,7 @@ import shutil
 import sys
 import tarfile
 import zipfile
-from typing import IO, Callable, Iterable, Optional, Type, TypeVar, Union, cast
+from typing import IO, TYPE_CHECKING, Callable, Iterable, Optional, Type, TypeVar, Union, cast, no_type_check
 
 __author__: str = "Dominic Davis-Foster"
 __copyright__: str = "2021 Dominic Davis-Foster"
@@ -54,12 +54,7 @@ if "wheel" not in shutil._UNPACK_FORMATS:  # type: ignore[attr-defined]
 			function=shutil._unpack_zipfile,  # type: ignore[attr-defined]
 			)
 
-if hasattr(tarfile, "FilterError"):  # pragma: nocover
-	# stdlib
-	from tarfile import data_filter as data_filter
-	from tarfile import fully_trusted_filter as fully_trusted_filter
-	from tarfile import tar_filter as tar_filter
-else:  # pragma: nocover
+if TYPE_CHECKING or not hasattr(tarfile, "FilterError"):  # pragma: nocover
 
 	def fully_trusted_filter(member, dest_path):  # noqa: MAN001,MAN002
 		return member
@@ -69,6 +64,12 @@ else:  # pragma: nocover
 
 	def data_filter(member, dest_path):  # noqa: MAN001,MAN002
 		return member
+
+else:  # pragma: nocover
+	# stdlib
+	from tarfile import data_filter as data_filter
+	from tarfile import fully_trusted_filter as fully_trusted_filter
+	from tarfile import tar_filter as tar_filter
 
 
 def unpack_archive(
@@ -110,23 +111,30 @@ class TarFile(tarfile.TarFile):
 	closed: bool
 	offset: int
 
+	@no_type_check
 	def extractall(
 			self,
 			path: PathLike = '.',
 			members: Optional[Iterable[tarfile.TarInfo]] = None,
 			*,
 			numeric_owner: bool = False,
-			filter: Optional[Callable] = None,
+			filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
 			) -> None:  # pragma: nocover
 		"""
 		Wrapper around :meth:`tarfile.TarFile.extractall` with compatibility shim for :pep:`706` on unpatched Pythons.
 		"""
 
 		if hasattr(tarfile, "FilterError"):
-			return super().extractall(path, members, numeric_owner=numeric_owner, filter=filter)
+			return super().extractall(
+					path,
+					members,
+					numeric_owner=numeric_owner,
+					filter=filter,
+					)
 		else:
 			return super().extractall(path, members, numeric_owner=numeric_owner)
 
+	@no_type_check
 	def extract(
 			self,
 			member: Union[str, tarfile.TarInfo],
@@ -134,14 +142,20 @@ class TarFile(tarfile.TarFile):
 			set_attrs: bool = True,
 			*,
 			numeric_owner: bool = False,
-			filter: Optional[Callable] = None,
+			filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
 			) -> None:  # pragma: nocover
 		"""
 		Wrapper around :meth:`tarfile.TarFile.extract` with compatibility shim for :pep:`706` on unpatched Pythons.
 		"""
 
 		if hasattr(tarfile, "FilterError"):
-			return super().extract(member, path, set_attrs, numeric_owner=numeric_owner, filter=filter)
+			return super().extract(
+					member,
+					path,
+					set_attrs,
+					numeric_owner=numeric_owner,
+					filter=filter,
+					)
 		else:
 			return super().extract(member, path, set_attrs, numeric_owner=numeric_owner)
 
