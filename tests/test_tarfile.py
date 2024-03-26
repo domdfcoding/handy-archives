@@ -55,7 +55,8 @@ def sha256sum(data):
 	return sha256(data).hexdigest()
 
 
-tarname = findfile("testtar.tar")
+findfile_subdir = "archivetestdata" if sys.version_info >= (3, 13) else None
+tarname = findfile("testtar.tar", subdir=findfile_subdir)
 sha256_regtype = ("e09e4bc8b3c9d9177e77256353b36c159f5f040531bbd4b024a8f9b9196c71ce")
 sha256_sparse = ("4f05a776071146756345ceee937b33fc5644f5a96b9780d1c7d6a32cdf164d7b")
 
@@ -319,18 +320,44 @@ class TestList(ReadTest):
 		# accessories if verbose flag is being used
 		# ...
 		# ?rw-r--r-- tarfile/tarfile     7011 2003-01-06 07:19:43 ustar/conttype
-		# ?rw-r--r-- tarfile/tarfile     7011 2003-01-06 07:19:43 ustar/regtype
+		# -rw-r--r-- tarfile/tarfile     7011 2003-01-06 07:19:43 ustar/regtype
+		# drwxr-xr-x tarfile/tarfile        0 2003-01-05 15:19:43 ustar/dirtype/
 		# ...
-		assert re.search((
-				br'\?rw-r--r-- tarfile/tarfile\s+7011 '
-				br'\d{4}-\d\d-\d\d\s+\d\d:\d\d:\d\d '
-				br'ustar/\w+type ?\r?\n'
-				) * 2,
-							out)
+
+		if sys.version_info >= (3, 13):
+			# Array of values to modify the regex below:
+			#  ((file_type, file_permissions, file_length), ...)
+			type_perm_lengths = (
+					(br'\?', b'rw-r--r--', b'7011'),
+					(b'-', b'rw-r--r--', b'7011'),
+					(b'd', b'rwxr-xr-x', b'0'),
+					(b'd', b'rwxr-xr-x', b'255'),
+					(br'\?', b'rw-r--r--', b'0'),
+					(b'l', b'rwxrwxrwx', b'0'),
+					(b'b', b'rw-rw----', b'3,0'),
+					(b'c', b'rw-rw-rw-', b'1,3'),
+					(b'p', b'rw-r--r--', b'0'),
+					)
+			search_pattern_elems = []
+			for tp, perm, ln in type_perm_lengths:
+				search_pattern_elems.append(tp)
+				search_pattern_elems.append(br'%s tarfile/tarfile\s+%s ' % (perm, ln))
+				search_pattern_elems.append(br'\d{4}-\d\d-\d\d\s+\d\d:\d\d:\d\d ustar/\w+type[/>\sa-z-]*\n')
+			re_search_pattern = b''.join(search_pattern_elems)
+
+		else:
+			re_search_pattern = (
+					br'\?rw-r--r-- tarfile/tarfile\s+7011 '
+					br'\d{4}-\d\d-\d\d\s+\d\d:\d\d:\d\d '
+					br'ustar/\w+type ?\r?\n'
+					) * 2
+
+		assert re.search(re_search_pattern, out)
+
 		# Make sure it prints the source of link with verbose flag
 		assert b'ustar/symtype -> regtype' in out
 		assert b'./ustar/linktest2/symtype -> ../linktest1/regtype' in out
-		assert b'./ustar/linktest2/lnktype link to ' b'./ustar/linktest1/regtype' in out
+		assert b'./ustar/linktest2/lnktype link to ./ustar/linktest1/regtype' in out
 		assert b'gnu' + (b'/123' * 125) + b'/longlink link to gnu' + (b'/123' * 125) + b'/longname' in out
 		assert b'pax' + (b'/123' * 125) + b'/longlink link to pax' + (b'/123' * 125) + b'/longname' in out
 
@@ -494,7 +521,7 @@ class CommonReadTest(ReadTest):
 	def test_length_zero_header(self):
 		# bpo-39017 (CVE-2019-20907): reading a zero-length header should fail with an exception
 		with pytest.raises(tarfile.ReadError, match="file could not be opened successfully"):
-			with TarFile.open(findfile("recursion.tar")):
+			with TarFile.open(findfile("recursion.tar", subdir=findfile_subdir)):
 				pass
 
 

@@ -51,6 +51,8 @@ SMALL_TEST_DATA = [
 		("ziptest2dir/ziptest3dir/ziptest4dir/_ziptest3", "6y7u8i9o0p"),
 		]
 
+findfile_subdir = "archivetestdata" if sys.version_info >= (3, 13) else None
+
 
 @pytest.fixture()
 def testfn(tmp_pathplus: PathPlus):
@@ -1509,7 +1511,7 @@ class TestsOther:
 	@requires_zlib()
 	def test_read_unicode_filenames(self):
 		# bug #10801
-		fname = findfile("zip_cp437_header.zip")
+		fname = findfile("zip_cp437_header.zip", subdir=findfile_subdir)
 		with ZipFile(fname) as zipfp:
 			for name in zipfp.namelist():
 				zipfp.open(name).close()
@@ -2413,7 +2415,7 @@ class TestsWithMultipleOpens:
 class TestWithDirectory:
 
 	def test_extract_dir(self, tmp_pathplus: PathPlus):
-		with ZipFile(findfile("zipdir.zip")) as zipf:
+		with ZipFile(findfile("zipdir.zip", subdir=findfile_subdir)) as zipf:
 			zipf.extractall(tmp_pathplus / TESTFN2)
 		assert os.path.isdir(tmp_pathplus / TESTFN2 / 'a')
 		assert os.path.isdir(tmp_pathplus / TESTFN2 / 'a' / 'b')
