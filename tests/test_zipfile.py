@@ -1380,16 +1380,26 @@ class TestExtract:
 				(r'C:\foo\bar', "foo/bar"),
 				(r'//conky/mountpoint/foo/bar', "foo/bar"),
 				(r'\\conky\mountpoint\foo\bar', "foo/bar"),
-				(r'///conky/mountpoint/foo/bar', "conky/mountpoint/foo/bar"),
-				(r'\\\conky\mountpoint\foo\bar', "conky/mountpoint/foo/bar"),
-				(r'//conky//mountpoint/foo/bar', "conky/mountpoint/foo/bar"),
-				(r'\\conky\\mountpoint\foo\bar', "conky/mountpoint/foo/bar"),
 				(r'//?/C:/foo/bar', "foo/bar"),
 				(r'\\?\C:\foo\bar', "foo/bar"),
 				(r'C:/../C:/foo/bar', "C_/foo/bar"),
 				(r'a:b\c<d>e|f"g?h*i', "b/c_d_e_f_g_h_i"),
 				("../../foo../../ba..r", "foo/ba..r"),
 				]
+		if sys.version_info < (3, 13):
+			windows_hacknames.extend([
+					(r'///conky/mountpoint/foo/bar', "conky/mountpoint/foo/bar"),
+					(r'\\\conky\mountpoint\foo\bar', "conky/mountpoint/foo/bar"),
+					(r'//conky//mountpoint/foo/bar', "conky/mountpoint/foo/bar"),
+					(r'\\conky\\mountpoint\foo\bar', "conky/mountpoint/foo/bar"),
+					])
+		else:
+			windows_hacknames.extend([
+					(r'///conky/mountpoint/foo/bar', "mountpoint/foo/bar"),
+					(r'\\\conky\mountpoint\foo\bar', "mountpoint/foo/bar"),
+					(r'///mountpoint/foo/bar', "mountpoint/foo/bar"),
+					(r'\\conky\\mountpoint\foo\bar', "mountpoint/foo/bar"),
+					])
 		self._test_extract_hackers_arcnames(windows_hacknames, tmp_pathplus)
 
 	@unittest.skipIf(os.path.sep != '/', r'Requires / as path separator.')
