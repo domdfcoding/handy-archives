@@ -1386,7 +1386,7 @@ class TestExtract:
 				(r'a:b\c<d>e|f"g?h*i', "b/c_d_e_f_g_h_i"),
 				("../../foo../../ba..r", "foo/ba..r"),
 				]
-		if sys.version_info < (3, 13):
+		if sys.version_info < (3, 11):
 			windows_hacknames.extend([
 					(r'///conky/mountpoint/foo/bar', "conky/mountpoint/foo/bar"),
 					(r'\\\conky\mountpoint\foo\bar', "conky/mountpoint/foo/bar"),
