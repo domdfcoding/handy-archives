@@ -458,7 +458,8 @@ class AbstractTestsWithSourceFile:
 				with zipfp.open(fname) as zipopen:
 					r = repr(zipopen)
 					assert f"name={fname!r}" in r
-					assert "mode='r'" in r
+					if sys.version_info < (3, 13):
+						assert "mode='r'" in r
 					if self.compression != zipfile.ZIP_STORED:
 						assert "compress_type=" in r
 				assert "[closed]" in repr(zipopen)
