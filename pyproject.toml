@@ -30,8 +30,8 @@ classifiers = [
     "Topic :: System :: Archiving :: Compression",
     "Typing :: Typed",
 ]
-dynamic = []
 dependencies = []
+dynamic = []
 
 [project.license]
 file = "LICENSE"
