@@ -761,11 +761,11 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 		try:
 			time.localtime(ts)
 		except OverflowError:
-			pytest.skip(msg=f'time.localtime({ts}) raises OverflowError')
+			pytest.skip(reason=f'time.localtime({ts}) raises OverflowError')
 		try:
 			os.utime(testfn, (ts, ts))
 		except OverflowError:
-			pytest.skip(msg="Host fs cannot set timestamp to required value.")
+			pytest.skip(reason="Host fs cannot set timestamp to required value.")
 
 		mtime_ns = os.stat(tmp_pathplus / TESTFN).st_mtime_ns
 		if mtime_ns != (4386268800 * 10**9):
