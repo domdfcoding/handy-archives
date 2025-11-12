@@ -1071,6 +1071,8 @@ class TestStoredTestZip64InSmallFiles(AbstractTestZip64InSmallFiles):
 		local_extra_length = struct.pack("<H", 4 + 8 * len(local_zip64_fields))
 		central_extra_length = struct.pack("<H", 4 + 8 * len(central_zip64_fields))
 
+		relative_offset_eocd = struct.pack("<Q", 108 + 8 * (len(central_zip64_fields) + len(local_zip64_fields)))
+
 		filename = b"test.txt"
 		content = b"test1234"
 		filename_length = struct.pack("<H", len(filename))
@@ -1087,7 +1089,7 @@ class TestStoredTestZip64InSmallFiles(AbstractTestZip64InSmallFiles):
 				+ b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x01\x00\x00\x00\x00\x00"
 				+ b"\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00" + central_dir_size + offset_to_central_dir
 				# Zip64 end of central directory locator
-				+ b"PK\x06\x07\x00\x00\x00\x00l\x00\x00\x00\x00\x00\x00\x00\x01" + b"\x00\x00\x00"
+				+ b"PK\x06\x07\x00\x00\x00\x00" + relative_offset_eocd + b"\x01\x00\x00\x00"
 				# end of central directory
 				+ b"PK\x05\x06\x00\x00\x00\x00\x01\x00\x01\x00:\x00\x00\x002\x00" + b"\x00\x00\x00\x00"
 				)
