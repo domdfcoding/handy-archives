@@ -67,9 +67,9 @@ if TYPE_CHECKING or not hasattr(tarfile, "FilterError"):  # pragma: nocover
 
 else:  # pragma: nocover
 	# stdlib
-	from tarfile import data_filter as data_filter
-	from tarfile import fully_trusted_filter as fully_trusted_filter
-	from tarfile import tar_filter as tar_filter
+	from tarfile import data_filter as data_filter  # noqa: F401
+	from tarfile import fully_trusted_filter as fully_trusted_filter  # noqa: F401
+	from tarfile import tar_filter as tar_filter  # noqa: F401
 
 
 def unpack_archive(
@@ -255,7 +255,7 @@ class TarFile(tarfile.TarFile):
 
 		# Create a TarInfo object from the file.
 		tarinfo = self.gettarinfo(os.fspath(filename), arcname)
-		tarinfo.mtime = mtime.timestamp()  # type: ignore[assignment]
+		tarinfo.mtime = mtime.timestamp()
 
 		if tarinfo is None:  # pragma: no cover
 			self._dbg(1, f"tarfile: Unsupported type {filename!r}")

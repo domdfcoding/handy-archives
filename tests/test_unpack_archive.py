@@ -28,10 +28,10 @@ from tests.utils import TESTFN, requires_bz2, requires_lzma, requires_zlib
 
 try:
 	# stdlib
-	from test.support import FakePath  # type: ignore[import]
+	from test.support import FakePath  # type: ignore[import-not-found]
 except ImportError:
 	# stdlib
-	from test.support.os_helper import FakePath  # type: ignore[import]
+	from test.support.os_helper import FakePath  # type: ignore[import-not-found]
 
 
 def rlistdir(path):
