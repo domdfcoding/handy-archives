@@ -15,7 +15,6 @@ sphinx_html_theme: furo
 use_flit: true
 tox_testenv_extras: testing
 standalone_contrib_guide: true
-python_deploy_version: 3.7
 
 python_versions:
  - '3.7'

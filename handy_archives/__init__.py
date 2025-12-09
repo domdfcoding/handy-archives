@@ -268,8 +268,8 @@ class TarFile(tarfile.TarFile):
 	def __enter__(self: _Self) -> _Self:
 		return super().__enter__()  # type: ignore[misc]
 
-	@classmethod  # noqa: A003  # pylint: disable=redefined-builtin
-	def open(  # type: ignore[override]  # noqa: D102
+	@classmethod
+	def open(  # type: ignore[override]  # noqa: D102,A003  # pylint: disable=redefined-builtin
 		cls: Type[_Self],
 		name: Optional[PathLike] = None,
 		*args,
@@ -402,8 +402,7 @@ class ZipFile(zipfile.ZipFile):
 
 		zinfo.compress_type = self.compression
 
-		if sys.version_info >= (3, 7):  # pragma: no cover (<py37)
-			zinfo._compresslevel = self.compresslevel  # type: ignore[attr-defined]
+		zinfo._compresslevel = self.compresslevel  # type: ignore[attr-defined]
 
 		st = os.stat(filename)
 		zinfo.external_attr = (st.st_mode & 0xFFFF) << 16  # Unix attributes
