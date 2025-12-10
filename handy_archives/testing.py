@@ -45,6 +45,7 @@ __all__ = ["ArchiveFileRegressionFixture", "archive_regression"]
 # Exists in type hints only; this fixes the docs
 LazyDataDir = Any
 
+
 class ArchiveFileRegressionFixture(AdvancedFileRegressionFixture):
 	"""
 	Class for performing regression checks on files in ``tar`` and ``zip`` archives.
