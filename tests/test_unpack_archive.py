@@ -16,7 +16,7 @@ from shutil import (
 		unregister_archive_format,
 		unregister_unpack_format
 		)
-from typing import no_type_check
+from typing import TYPE_CHECKING, no_type_check
 
 # 3rd party
 import pytest
@@ -26,12 +26,15 @@ from domdf_python_tools.paths import TemporaryPathPlus
 from handy_archives import unpack_archive
 from tests.utils import TESTFN, requires_bz2, requires_lzma, requires_zlib
 
-try:
-	# stdlib
-	from test.support import FakePath  # type: ignore[import-not-found]
-except ImportError:
-	# stdlib
-	from test.support.os_helper import FakePath  # type: ignore[import-not-found]
+if TYPE_CHECKING:
+	FakePath = str
+else:
+	try:
+		# stdlib
+		from test.support import FakePath
+	except ImportError:
+		# stdlib
+		from test.support.os_helper import FakePath
 
 
 def rlistdir(path):
