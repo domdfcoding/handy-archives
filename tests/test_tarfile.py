@@ -51,7 +51,7 @@ except ImportError:
 	lzma = None
 
 
-def sha256sum(data):
+def sha256sum(data) -> bytes:
 	return sha256(data).hexdigest()
 
 
@@ -69,7 +69,7 @@ class TarTest:
 	prefix: str
 
 	@property
-	def mode(self):
+	def mode(self) -> str:
 		return self.prefix + self.suffix
 
 
@@ -87,7 +87,7 @@ class GzipTest(BaseTest):
 	taropen = TarFile.gzopen
 
 	@pytest.fixture(autouse=True)
-	def _tarfile(self, tmp_pathplus: PathPlus):
+	def _tarfile(self, tmp_pathplus: PathPlus) -> None:
 		os.path.join(tmp_pathplus, "testtar.tar.gz")
 		self.tarname = "testtar.tar.gz"
 
@@ -109,7 +109,7 @@ class Bz2Test(BaseTest):
 	taropen = TarFile.bz2open
 
 	@pytest.fixture(autouse=True)
-	def _tarfile(self, tmp_pathplus: PathPlus):
+	def _tarfile(self, tmp_pathplus: PathPlus) -> None:
 		os.path.join(tmp_pathplus, "testtar.tar.bz2")
 		self.tarname = "testtar.tar.bz2"
 
@@ -131,7 +131,7 @@ class LzmaTest(BaseTest):
 	taropen = TarFile.xzopen
 
 	@pytest.fixture(autouse=True)
-	def _tarfile(self, tmp_pathplus: PathPlus):
+	def _tarfile(self, tmp_pathplus: PathPlus) -> None:
 		os.path.join(tmp_pathplus, "testtar.tar.xz")
 		self.tarname = "testtar.tar.xz"
 
@@ -151,7 +151,7 @@ class ReadTest(TarTest):
 	prefix = "r:"
 
 	@pytest.fixture(autouse=True)
-	def _tarfile(self, tmp_pathplus: PathPlus):
+	def _tarfile(self, tmp_pathplus: PathPlus) -> None:
 		self.tar = TarFile.open(tmp_pathplus / self.tarname, mode=self.mode, encoding="iso8859-1")
 
 
@@ -237,7 +237,7 @@ class TestUstarRead(ReadTest):
 	# Test if symbolic and hard links are resolved by extractfile().  The
 	# test link members each point to a regular member whose data is
 	# supposed to be exported.
-	def _test_fileobj_link(self, lnktype, regtype):
+	def _test_fileobj_link(self, lnktype, regtype) -> None:
 		with self.tar.extractfile(lnktype) as a, self.tar.extractfile(regtype) as b:
 			assert a.name == b.name
 
@@ -272,7 +272,7 @@ class TestLzmaUstarRead(LzmaTest, TestUstarRead):
 class TestList(ReadTest):
 
 	@pytest.fixture(autouse=True)
-	def _tarfile(self, tmp_pathplus: PathPlus):
+	def _tarfile(self, tmp_pathplus: PathPlus) -> None:
 		self.tar = TarFile.open(tmp_pathplus / self.tarname, mode=self.mode)
 
 	def test_list(self):
@@ -291,7 +291,7 @@ class TestList(ReadTest):
 		assert b'ustar/dirtype-with-size/' in out
 
 		# Make sure it is able to print unencodable characters
-		def conv(b):
+		def conv(b) -> bytes:
 			s = b.decode(self.tar.encoding, "surrogateescape")
 			return s.encode("ascii", "backslashreplace")
 
@@ -527,7 +527,7 @@ class CommonReadTest(ReadTest):
 
 class MiscReadTestBase(CommonReadTest):
 
-	def requires_name_attribute(self):
+	def requires_name_attribute(self) -> None:
 		pass
 
 	def test_no_name_argument(self, tmp_pathplus: PathPlus):
@@ -699,7 +699,7 @@ class MiscReadTestBase(CommonReadTest):
 					# Win32 has no support for fine grained permissions.
 					assert tarinfo.mode & 0o777 == os.stat(path).st_mode & 0o777
 
-				def format_mtime(mtime):
+				def format_mtime(mtime) -> str:
 					if isinstance(mtime, float):
 						return f"{mtime} ({mtime.hex()})"
 					else:
@@ -707,7 +707,9 @@ class MiscReadTestBase(CommonReadTest):
 
 				file_mtime = os.path.getmtime(path)
 				errmsg = "tar mtime {} != file time {} of path {!a}".format(
-						format_mtime(tarinfo.mtime), format_mtime(file_mtime), path
+						format_mtime(tarinfo.mtime),
+						format_mtime(file_mtime),
+						path,
 						)
 				assert tarinfo.mtime == file_mtime, errmsg
 		finally:
@@ -782,13 +784,13 @@ class TestReadMiscGzip(GzipTest, MiscReadTestBase):
 
 class TestReadMiscBz2(Bz2Test, MiscReadTestBase):
 
-	def requires_name_attribute(self):
+	def requires_name_attribute(self) -> None:
 		pytest.skip("BZ2File have no name attribute")
 
 
 class TestReadMiscLzma(LzmaTest, MiscReadTestBase):
 
-	def requires_name_attribute(self):
+	def requires_name_attribute(self) -> None:
 		pytest.skip("LZMAFile have no name attribute")
 
 
@@ -869,7 +871,7 @@ class TestDetectRead(TarTest):
 
 	prefix = "r:"
 
-	def _testfunc_file(self, name, mode):
+	def _testfunc_file(self, name, mode) -> None:
 		tar = None
 		try:
 			tar = TarFile.open(name, mode)
@@ -877,7 +879,7 @@ class TestDetectRead(TarTest):
 			if tar is not None:
 				tar.close()
 
-	def _testfunc_fileobj(self, name, mode):
+	def _testfunc_fileobj(self, name, mode) -> None:
 		tar = None
 		try:
 			with open(name, "rb") as f:
@@ -886,7 +888,7 @@ class TestDetectRead(TarTest):
 			if tar is not None:
 				tar.close()
 
-	def _test_modes(self, testfunc, tmpdir):
+	def _test_modes(self, testfunc, tmpdir) -> None:
 		if self.suffix:
 			with pytest.raises(tarfile.ReadError):
 				TarFile.open(tarname, mode="r:" + self.suffix)
@@ -940,7 +942,7 @@ class TestLzmaDetectRead(LzmaTest, TestDetectRead):
 
 class TestReadMember(ReadTest):
 
-	def _test_member(self, tarinfo, chksum=None, **kwargs):
+	def _test_member(self, tarinfo, chksum=None, **kwargs) -> None:
 		if chksum is not None:
 			with self.tar.extractfile(tarinfo) as f:
 				assert sha256sum(f.read()) == chksum, f"wrong sha256sum for {tarinfo.name}"
@@ -1082,7 +1084,7 @@ class TestReadGNU(LongnameTest, ReadTest):
 	# about holes in files. Therefore, we first do one basic test which works
 	# an all platforms, and after that a test that will work only on
 	# platforms/filesystems that prove to support sparse files.
-	def _test_sparse_file(self, name, tmpdir: PathPlus):
+	def _test_sparse_file(self, name, tmpdir: PathPlus) -> None:
 		self.tar.extract(name, tmpdir)
 		filename = os.path.join(tmpdir, name)
 		with open(filename, "rb") as fobj:
@@ -1106,7 +1108,7 @@ class TestReadGNU(LongnameTest, ReadTest):
 		self._test_sparse_file("gnu/sparse-1.0", tmp_pathplus)
 
 	@staticmethod
-	def _fs_supports_holes(tmpdir: PathPlus):
+	def _fs_supports_holes(tmpdir: PathPlus) -> bool:
 		# Return True if the platform knows the st_blocks stat attribute and
 		# uses st_blocks units of 512 bytes, and if the filesystem is able to
 		# store holes of 4 KiB in files.
@@ -1399,7 +1401,7 @@ class TestWrite(WriteTestBase):
 	# remove ./ or ../ or double slashes. Still make absolute
 	# pathnames relative.
 	# For details see bug #6054.
-	def _test_pathname(self, path, cmp_path=None, dir=False):  # noqa: A002  # pylint: disable=redefined-builtin
+	def _test_pathname(self, path, cmp_path=None, dir=False) -> None:  # noqa: A002  # pylint: disable=redefined-builtin
 		# Create a tarfile with an empty member named path
 		# and compare the stored name with the original.
 
@@ -1483,7 +1485,7 @@ class TestWrite(WriteTestBase):
 				class BadFile(io.BytesIO):
 					first = True
 
-					def write(self, data):
+					def write(self, data) -> None:
 						if self.first:
 							self.first = False
 							raise exctype
@@ -1491,7 +1493,11 @@ class TestWrite(WriteTestBase):
 				f = BadFile()
 				with pytest.raises(exctype):
 					TarFile.open(
-							tmpname, self.mode, fileobj=f, format=tarfile.PAX_FORMAT, pax_headers={"non": "empty"}
+							tmpname,
+							self.mode,
+							fileobj=f,
+							format=tarfile.PAX_FORMAT,
+							pax_headers={"non": "empty"},
 							)
 				assert not f.closed
 
@@ -1532,7 +1538,8 @@ class TestWriteStream(WriteTestBase):
 			assert data.count(b"\0") == tarfile.RECORDSIZE, "incorrect zero padding"
 
 	@pytest.mark.skipif(
-			not (sys.platform != "win32" and hasattr(os, "umask")), reason="Missing umask implementation"
+			not (sys.platform != "win32" and hasattr(os, "umask")),
+			reason="Missing umask implementation",
 			)
 	def test_file_mode(self):
 		# Test for issue #8464: Create files with correct
@@ -1574,7 +1581,7 @@ class TestWriteGNU(unittest.TestCase):
 		blocks = len(s) // 512 + 1
 		return blocks * 512
 
-	def _calc_size(self, name, link=None):
+	def _calc_size(self, name, link=None) -> int:
 		# Initial tar header
 		count = 512
 
@@ -1588,7 +1595,7 @@ class TestWriteGNU(unittest.TestCase):
 			count += self._length(link)
 		return count
 
-	def _test(self, name, link=None):
+	def _test(self, name, link=None) -> None:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 
@@ -1650,7 +1657,7 @@ class TestCreate(WriteTestBase):
 	prefix = "x:"
 
 	@pytest.fixture(autouse=True)
-	def _filepath(self, tmp_pathplus):
+	def _filepath(self, tmp_pathplus) -> None:
 		with open(tmp_pathplus / "spameggs42", "wb") as fobj:
 			fobj.write(b"aaa")
 
@@ -1817,7 +1824,7 @@ class TestCreateeWithXMode(TestCreate):
 
 class TestWritePax(TestWriteGNU):
 
-	def _test(self, name, link=None):
+	def _test(self, name, link=None) -> None:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 
@@ -1914,7 +1921,7 @@ class UnicodeTest:
 	def test_utf8_filename(self):
 		self._test_unicode_filename("utf-8")
 
-	def _test_unicode_filename(self, encoding):
+	def _test_unicode_filename(self, encoding) -> None:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 
@@ -2029,7 +2036,7 @@ class TestUnicodeUstar(UnicodeTest):
 		self._test_ustar_name("0123456789" * 15 + "01234/" + "0123456789" * 9 + "012345ÿÿ")
 		self._test_ustar_name("0123456789" * 15 + "01234/" + "0123456789" * 9 + "0123456ÿÿ", ValueError)
 
-	def _test_ustar_name(self, name, exc=None):
+	def _test_ustar_name(self, name, exc=None) -> None:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 
@@ -2058,7 +2065,7 @@ class TestUnicodeUstar(UnicodeTest):
 		self._test_ustar_link("0123456789" * 9 + "012345ÿÿ")
 		self._test_ustar_link("0123456789" * 9 + "0123456ÿÿ", ValueError)
 
-	def _test_ustar_link(self, name, exc=None):
+	def _test_ustar_link(self, name, exc=None) -> None:
 
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
@@ -2088,7 +2095,8 @@ class TestUnicodeGNU(UnicodeTest):
 		# without a hdrcharset=BINARY header.
 		for encoding, name in (
 			("utf-8", "pax/bad-pax-\udce4\udcf6\udcfc"),
-			("iso8859-1", "pax/bad-pax-äöü"),):
+			("iso8859-1", "pax/bad-pax-äöü"),
+		):
 			with TarFile.open(tarname, encoding=encoding, errors="surrogateescape") as tar:
 				try:
 					t = tar.getmember(name)
@@ -2107,7 +2115,8 @@ class TestUnicodePAX(UnicodeTest):
 		# Test a POSIX.1-2008 compatible header with a hdrcharset=BINARY field.
 		for encoding, name in (
 			("utf-8", "pax/hdrcharset-\udce4\udcf6\udcfc"),
-			("iso8859-1", "pax/hdrcharset-äöü"),):
+			("iso8859-1", "pax/hdrcharset-äöü"),
+		):
 			with TarFile.open(tarname, encoding=encoding, errors="surrogateescape") as tar:
 				try:
 					t = tar.getmember(name)
@@ -2118,7 +2127,7 @@ class TestUnicodePAX(UnicodeTest):
 class AppendTestBase:
 	# Test append mode (cp. patch #1652681).
 
-	def _create_testtar(self, tmpdir, mode="w:"):
+	def _create_testtar(self, tmpdir: PathPlus, mode="w:") -> None:
 		with TarFile.open(tmpdir / tarname, encoding="iso8859-1") as src:
 			t = src.getmember("ustar/regtype")
 			t.name = "foo"
@@ -2138,15 +2147,15 @@ class AppendTestBase:
 class TestAppend(AppendTestBase):
 	test_append_compressed = None
 
-	def _add_testfile(self, tmpdir, fileobj=None):
+	def _add_testfile(self, tmpdir: PathPlus, fileobj=None) -> None:
 		with TarFile.open(tmpdir / "tmp.tar", 'a', fileobj=fileobj) as tar:
 			tar.addfile(tarfile.TarInfo("bar"))
 
-	def _test(self, tmpdir, names=["bar"], fileobj=None):
+	def _test(self, tmpdir: PathPlus, names=["bar"], fileobj=None) -> None:
 		with TarFile.open(tmpdir / "tmp.tar", fileobj=fileobj) as tar:
 			assert tar.getnames() == names
 
-	def test_non_existing(self):
+	def test_non_existing(self) -> None:
 		with TemporaryPathPlus() as tmpdir:
 			tmpname = tmpdir / "tmp.tar"
 			self._add_testfile(tmpdir)
@@ -2190,7 +2199,7 @@ class TestAppend(AppendTestBase):
 
 	# Append mode is supposed to fail if the tarfile to append to
 	# does not end with a zero block.
-	def _test_error(self, data, tmpdir):
+	def _test_error(self, data, tmpdir: PathPlus) -> None:
 		with open(tmpdir / "tmp.tar", "wb") as fobj:
 			fobj.write(data)
 		with pytest.raises(tarfile.ReadError):
@@ -2374,7 +2383,7 @@ class TestBz2PartialRead(Bz2Test):
 
 	mode = 'r'
 
-	def _test_partial_input(self, mode):
+	def _test_partial_input(self, mode) -> None:
 
 		class MyBytesIO(io.BytesIO):
 			hit_eof = False
@@ -2385,7 +2394,7 @@ class TestBz2PartialRead(Bz2Test):
 				self.hit_eof = self.tell() == len(self.getvalue())
 				return super().read(n)
 
-			def seek(self, *args):
+			def seek(self, *args) -> None:
 				self.hit_eof = False
 				return super().seek(*args)
 

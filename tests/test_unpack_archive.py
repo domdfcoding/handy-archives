@@ -50,7 +50,7 @@ def rlistdir(path):
 	return res
 
 
-def write_file(path, content, binary=False):
+def write_file(path, content, binary=False) -> None:
 	"""Write *content* to a file located at *path*.
 
 	If *path* is a tuple instead of a string, os.path.join will be used to
@@ -86,7 +86,7 @@ class TestArchives(unittest.TestCase):
 
 	### shutil.unpack_archive
 
-	def check_unpack_archive(self, format):  # noqa: A002  # pylint: disable=redefined-builtin
+	def check_unpack_archive(self, format) -> None:  # noqa: A002  # pylint: disable=redefined-builtin
 		self.check_unpack_archive_with_converter(format, lambda path: path)
 		self.check_unpack_archive_with_converter(format, pathlib.Path)
 		self.check_unpack_archive_with_converter(format, FakePath)
@@ -95,7 +95,7 @@ class TestArchives(unittest.TestCase):
 			self,
 			format,  # noqa: A002  # pylint: disable=redefined-builtin
 			converter,
-			):
+			) -> None:
 		base_dir = "dist"
 
 		with TemporaryPathPlus() as root_dir:
@@ -153,7 +153,7 @@ class TestArchives(unittest.TestCase):
 
 		formats = get_unpack_formats()
 
-		def _boo(filename, extract_dir, extra):
+		def _boo(filename, extract_dir, extra) -> None:
 			assert extra == 1
 			assert filename == "stuff.boo"
 			assert extract_dir == "xx"

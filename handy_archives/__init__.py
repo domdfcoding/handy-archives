@@ -112,14 +112,14 @@ class TarFile(tarfile.TarFile):
 	offset: int
 
 	@no_type_check
-	def extractall(
-			self,
-			path: PathLike = '.',
-			members: Optional[Iterable[tarfile.TarInfo]] = None,
-			*,
-			numeric_owner: bool = False,
-			filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
-			) -> None:  # pragma: nocover
+	def extractall(  # noqa: PRM002
+		self,
+		path: PathLike = '.',
+		members: Optional[Iterable[tarfile.TarInfo]] = None,
+		*,
+		numeric_owner: bool = False,
+		filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
+	) -> None:  # pragma: nocover
 		"""
 		Wrapper around :meth:`tarfile.TarFile.extractall` with compatibility shim for :pep:`706` on unpatched Pythons.
 		"""
@@ -135,15 +135,15 @@ class TarFile(tarfile.TarFile):
 			return super().extractall(path, members, numeric_owner=numeric_owner)
 
 	@no_type_check
-	def extract(
-			self,
-			member: Union[str, tarfile.TarInfo],
-			path: PathLike = '',
-			set_attrs: bool = True,
-			*,
-			numeric_owner: bool = False,
-			filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
-			) -> None:  # pragma: nocover
+	def extract(  # noqa: PRM002
+		self,
+		member: Union[str, tarfile.TarInfo],
+		path: PathLike = '',
+		set_attrs: bool = True,
+		*,
+		numeric_owner: bool = False,
+		filter: Optional[Callable] = None,  # noqa: A002  # pylint: disable=redefined-builtin
+	) -> None:  # pragma: nocover
 		"""
 		Wrapper around :meth:`tarfile.TarFile.extract` with compatibility shim for :pep:`706` on unpatched Pythons.
 		"""
@@ -274,7 +274,7 @@ class TarFile(tarfile.TarFile):
 		name: Optional[PathLike] = None,
 		*args,
 		**kwargs,
-		) -> _Self:
+	) -> _Self:
 
 		if name is not None:
 			name = os.fspath(name)
@@ -329,7 +329,7 @@ class ZipFile(zipfile.ZipFile):
 			member: Union[str, zipfile.ZipInfo],
 			pwd: Union[str, bytes, None] = None,
 			*,
-			normalize_nl: bool = False
+			normalize_nl: bool = False,
 			) -> str:
 		r"""
 		Returns the content of the given file as a string.

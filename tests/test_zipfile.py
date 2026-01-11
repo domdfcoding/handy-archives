@@ -78,7 +78,7 @@ class AbstractTestsWithSourceFile:
 	compression: int
 
 	@classmethod
-	def setup_class(cls):
+	def setup_class(cls) -> None:
 		cls.line_gen = [
 				bytes(f"Zipfile test line {i:d}. random float: {random.random():f}\n", "ascii")
 				for i in range(FIXEDTEST_SIZE)
@@ -497,7 +497,7 @@ class AbstractTestsWithSourceFile:
 
 		class BrokenFile(io.BytesIO):
 
-			def write(self, data):
+			def write(self, data) -> None:
 				nonlocal count
 				if count is not None:
 					if count == stop:
@@ -847,7 +847,7 @@ class AbstractTestZip64InSmallFiles:
 	compression: int
 
 	@classmethod
-	def setup_class(cls):
+	def setup_class(cls) -> None:
 		line_gen = (bytes(f"Test of zipfile line {i:d}.", "ascii") for i in range(0, FIXEDTEST_SIZE))
 		cls.data = b'\n'.join(line_gen)
 
@@ -1055,14 +1055,17 @@ class TestStoredTestZip64InSmallFiles(AbstractTestZip64InSmallFiles):
 		header_offset = struct.pack("<L", header_offset)
 
 		local_extra = struct.pack(
-				"<HH" + 'Q' * len(local_zip64_fields), 0x0001, 8 * len(local_zip64_fields), *local_zip64_fields
+				"<HH" + 'Q' * len(local_zip64_fields),
+				0x0001,
+				8 * len(local_zip64_fields),
+				*local_zip64_fields,
 				)
 
 		central_extra = struct.pack(
 				"<HH" + 'Q' * len(central_zip64_fields),
 				0x0001,
 				8 * len(central_zip64_fields),
-				*central_zip64_fields
+				*central_zip64_fields,
 				)
 
 		central_dir_size = struct.pack("<Q", 58 + 8 * len(central_zip64_fields))
@@ -1117,7 +1120,7 @@ class TestStoredTestZip64InSmallFiles(AbstractTestZip64InSmallFiles):
 
 		# zip64 compress size present, no fields in extra, expecting one,
 		# equals missing compress size.
-		missing_compress_size_extra = self.make_zip64_file(compress_size_64_set=True, )
+		missing_compress_size_extra = self.make_zip64_file(compress_size_64_set=True)
 		with pytest.raises(zipfile.BadZipFile) as e:
 			ZipFile(io.BytesIO(missing_compress_size_extra))
 		assert "compress size" in str(e.value).lower()
@@ -2214,7 +2217,7 @@ class AbstractTestsWithRandomBinaryFiles:
 			zipfp.write(tmpdir / TESTFN, "another.name")
 			zipfp.write(tmpdir / TESTFN, TESTFN)
 
-	def zip_test(self, f, tmpdir: PathPlus, compression: int):
+	def zip_test(self, f, tmpdir: PathPlus, compression: int) -> None:
 		self.make_test_archive(f, tmpdir, compression)
 
 		# Read the ZIP archive
@@ -2317,7 +2320,7 @@ class TestLzmaTestsWithRandomBinaryFiles(AbstractTestsWithRandomBinaryFiles):
 class TestsWithMultipleOpens:
 
 	@classmethod
-	def setup_class(cls):
+	def setup_class(cls) -> None:
 		cls.data1 = b'111' + random.randbytes(10000)
 		cls.data2 = b'222' + random.randbytes(10000)
 

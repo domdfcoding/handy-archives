@@ -5,7 +5,7 @@ from typing import Callable, no_type_check
 
 
 @no_type_check
-def requires_gzip(reason="requires gzip"):
+def requires_gzip(reason: str = "requires gzip") -> Callable:
 	try:
 		# stdlib
 		import gzip
@@ -15,7 +15,7 @@ def requires_gzip(reason="requires gzip"):
 
 
 @no_type_check
-def requires_zlib(reason="requires zlib"):
+def requires_zlib(reason: str = "requires zlib") -> Callable:
 	try:
 		# stdlib
 		import zlib
@@ -25,7 +25,7 @@ def requires_zlib(reason="requires zlib"):
 
 
 @no_type_check
-def requires_bz2(reason="requires bz2"):
+def requires_bz2(reason: str = "requires bz2") -> Callable:
 	try:
 		# stdlib
 		import bz2
@@ -35,7 +35,7 @@ def requires_bz2(reason="requires bz2"):
 
 
 @no_type_check
-def requires_lzma(reason="requires lzma"):
+def requires_lzma(reason: str = "requires lzma") -> Callable:
 	try:
 		# stdlib
 		import lzma
@@ -44,7 +44,7 @@ def requires_lzma(reason="requires lzma"):
 	return unittest.skipUnless(lzma, reason)
 
 
-def skip_unless_symlink(test: Callable):
+def skip_unless_symlink(test: Callable) -> Callable:
 	"""
 	Skip decorator for tests that require symlinks.
 	"""
