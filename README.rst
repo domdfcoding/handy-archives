@@ -109,11 +109,11 @@ handy-archives
 	:target: https://github.com/domdfcoding/handy-archives/commit/master
 	:alt: GitHub last commit
 
-.. |maintained| image:: https://img.shields.io/maintenance/yes/2025
+.. |maintained| image:: https://img.shields.io/maintenance/yes/2026
 	:alt: Maintenance
 
 .. |pypi-downloads| image:: https://img.shields.io/pypi/dm/handy-archives
-	:target: https://pypi.org/project/handy-archives/
+	:target: https://pypistats.org/packages/handy-archives
 	:alt: PyPI - Downloads
 
 .. end shields
