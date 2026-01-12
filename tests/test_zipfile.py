@@ -1402,7 +1402,7 @@ class TestExtract:
 			windows_hacknames.extend([
 					(r'///conky/mountpoint/foo/bar', "mountpoint/foo/bar"),
 					(r'\\\conky\mountpoint\foo\bar', "mountpoint/foo/bar"),
-					(r'///mountpoint/foo/bar', "mountpoint/foo/bar"),
+					(r'//conky//mountpoint/foo/bar', "mountpoint/foo/bar"),
 					(r'\\conky\\mountpoint\foo\bar', "mountpoint/foo/bar"),
 					])
 		self._test_extract_hackers_arcnames(windows_hacknames, tmp_pathplus)
