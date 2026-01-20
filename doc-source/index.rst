@@ -90,12 +90,12 @@ handy-archives
 		:wheel:
 		:alt: PyPI - Wheel
 
-	.. |conda-version| image:: https://img.shields.io/conda/v/domdfcoding/handy-archives?logo=anaconda
-		:target: https://anaconda.org/domdfcoding/handy-archives
+	.. |conda-version| image:: https://img.shields.io/conda/v/conda-forge/handy-archives?logo=anaconda
+		:target: https://anaconda.org/conda-forge/handy-archives
 		:alt: Conda - Package Version
 
-	.. |conda-platform| image:: https://img.shields.io/conda/pn/domdfcoding/handy-archives?label=conda%7Cplatform
-		:target: https://anaconda.org/domdfcoding/handy-archives
+	.. |conda-platform| image:: https://img.shields.io/conda/pn/conda-forge/handy-archives?label=conda%7Cplatform
+		:target: https://anaconda.org/conda-forge/handy-archives
 		:alt: Conda - Platform
 
 	.. |license| github-shield::
@@ -133,7 +133,7 @@ Installation
 	:pypi:
 	:github:
 	:anaconda:
-	:conda-channels: conda-forge, domdfcoding
+	:conda-channels: conda-forge
 
 .. end installation
 

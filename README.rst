@@ -86,12 +86,12 @@ handy-archives
 	:target: https://pypi.org/project/handy-archives/
 	:alt: PyPI - Wheel
 
-.. |conda-version| image:: https://img.shields.io/conda/v/domdfcoding/handy-archives?logo=anaconda
-	:target: https://anaconda.org/domdfcoding/handy-archives
+.. |conda-version| image:: https://img.shields.io/conda/v/conda-forge/handy-archives?logo=anaconda
+	:target: https://anaconda.org/conda-forge/handy-archives
 	:alt: Conda - Package Version
 
-.. |conda-platform| image:: https://img.shields.io/conda/pn/domdfcoding/handy-archives?label=conda%7Cplatform
-	:target: https://anaconda.org/domdfcoding/handy-archives
+.. |conda-platform| image:: https://img.shields.io/conda/pn/conda-forge/handy-archives?label=conda%7Cplatform
+	:target: https://anaconda.org/conda-forge/handy-archives
 	:alt: Conda - Platform
 
 .. |license| image:: https://img.shields.io/github/license/domdfcoding/handy-archives
@@ -133,17 +133,8 @@ To install with ``pip``:
 
 To install with ``conda``:
 
-	* First add the required channels
+.. code-block:: bash
 
-	.. code-block:: bash
-
-		$ conda config --add channels https://conda.anaconda.org/conda-forge
-		$ conda config --add channels https://conda.anaconda.org/domdfcoding
-
-	* Then install
-
-	.. code-block:: bash
-
-		$ conda install handy-archives
+	$ conda install -c conda-forge handy-archives
 
 .. end installation

@@ -15,6 +15,8 @@ sphinx_html_theme: furo
 use_flit: true
 tox_testenv_extras: testing
 standalone_contrib_guide: true
+on_conda_forge: true
+enable_conda: false
 
 python_versions:
  - '3.7'
@@ -27,9 +29,6 @@ python_versions:
  - pypy37
  - pypy38
  - pypy39
-
-conda_channels:
- - conda-forge
 
 sphinx_conf_epilogue:
  - nitpicky = True
@@ -60,6 +59,3 @@ classifiers:
  - 'Topic :: Software Development :: Libraries :: Python Modules'
  - "Topic :: System :: Archiving"
  - "Topic :: System :: Archiving :: Compression"
-
-exclude_files:
- - conda_actions

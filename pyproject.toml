@@ -50,12 +50,6 @@ Documentation = "https://handy-archives.readthedocs.io/en/latest"
 testing = [ "coincidence>=0.2.0", "pytest>=6.0.0",]
 all = [ "coincidence>=0.2.0", "pytest>=6.0.0",]
 
-[tool.mkrecipe]
-conda-channels = [ "conda-forge", "domdfcoding",]
-extras = "all"
-license-key = "MIT"
-package = "handy_archives"
-
 [tool.sphinx-pyproject]
 github_username = "domdfcoding"
 github_repository = "handy-archives"
