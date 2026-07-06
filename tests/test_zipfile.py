@@ -1373,7 +1373,8 @@ class TestExtract:
 
 	@unittest.skipIf(os.path.sep != '\\', "Requires \\ as path separator.")
 	def test_extract_hackers_arcnames_windows_only(self, tmp_pathplus: PathPlus):
-		"""Test combination of path fixing and windows name sanitization."""
+		"""Test combination of path fixing and windows name sanitization.
+"""
 		windows_hacknames = [
 				(r'..\foo\bar', "foo/bar"),
 				(r'..\/foo\/bar', "foo/bar"),
@@ -1485,7 +1486,8 @@ class TestsOther:
 				orig_zip.writestr(zinfo, data)
 
 	def test_close(self, tmp_pathplus: PathPlus):
-		"""Check that the zipfile is closed after the 'with' block."""
+		"""Check that the zipfile is closed after the 'with' block.
+"""
 		with ZipFile(tmp_pathplus / TESTFN2, 'w') as zipfp:
 			for fpath, fdata in SMALL_TEST_DATA:
 				zipfp.writestr(fpath, fdata)
@@ -1498,7 +1500,8 @@ class TestsOther:
 
 	def test_close_on_exception(self, tmp_pathplus: PathPlus):
 		"""Check that the zipfile is closed if an exception is raised in the
-		'with' block."""
+		'with' block.
+"""
 		with ZipFile(tmp_pathplus / TESTFN2, 'w') as zipfp:
 			for fpath, fdata in SMALL_TEST_DATA:
 				zipfp.writestr(fpath, fdata)
@@ -1549,7 +1552,8 @@ class TestsOther:
 			assert zipfp.read("приклад") == b'sample'
 
 	def test_exclusive_create_zip_file(self, tmp_pathplus: PathPlus):
-		"""Test exclusive creating a new zipfile."""
+		"""Test exclusive creating a new zipfile.
+"""
 		unlink(tmp_pathplus / TESTFN2)
 		filename = "testfile.txt"
 		content = b'hello, world. this is some content.'
@@ -1592,7 +1596,8 @@ class TestsOther:
 			pass
 
 	def test_is_zip_erroneous_file(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Check that is_zipfile() correctly identifies non-zip files."""
+		"""Check that is_zipfile() correctly identifies non-zip files.
+"""
 
 		with open(testfn, 'w', encoding="utf-8") as fp:
 			fp.write("this is not a legal zip file\n")
@@ -1613,7 +1618,8 @@ class TestsOther:
 		assert not zipfile.is_zipfile(fp)
 
 	def test_damaged_zipfile(self):
-		"""Check that zipfiles with missing bytes at the end raise BadZipFile."""
+		"""Check that zipfiles with missing bytes at the end raise BadZipFile.
+"""
 		# - Create a valid zip file
 		fp = io.BytesIO()
 		with ZipFile(fp, mode='w') as zipf:
@@ -1628,7 +1634,8 @@ class TestsOther:
 				ZipFile(fp)
 
 	def test_is_zip_valid_file(self, tmp_pathplus, testfn: PathPlus):
-		"""Check that is_zipfile() correctly identifies zip files."""
+		"""Check that is_zipfile() correctly identifies zip files.
+"""
 		# - passing a filename
 		with ZipFile(testfn, mode='w') as zipf:
 			zipf.writestr("foo.txt", b"O, for a Muse of Fire!")
@@ -1673,7 +1680,8 @@ class TestsOther:
 			ZipFile(tmp_pathplus / TESTFN)
 
 	def test_closed_zip_raises_ValueError(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Verify that testzip() doesn't swallow inappropriate exceptions."""
+		"""Verify that testzip() doesn't swallow inappropriate exceptions.
+"""
 		data = io.BytesIO()
 		with ZipFile(data, mode='w') as zipf:
 			zipf.writestr("foo.txt", "O, for a Muse of Fire!")
@@ -1731,14 +1739,16 @@ class TestsOther:
 
 	def test_open_non_existent_item(self, tmp_pathplus: PathPlus, testfn: PathPlus):
 		"""Check that attempting to call open() for an item that doesn't
-		exist in the archive raises a RuntimeError."""
+		exist in the archive raises a RuntimeError.
+"""
 		with ZipFile(testfn, mode='w') as zipf:
 			with pytest.raises(KeyError):
 				zipf.open("foo.txt", 'r')
 
 	def test_bad_compression_mode(self, tmp_pathplus: PathPlus, testfn: PathPlus):
 		"""Check that bad compression methods passed to ZipFile.open are
-		caught."""
+		caught.
+"""
 		with pytest.raises(NotImplementedError):
 			ZipFile(testfn, 'w', -1)
 
@@ -1758,13 +1768,15 @@ class TestsOther:
 
 	def test_null_byte_in_filename(self, tmp_pathplus: PathPlus, testfn: PathPlus):
 		"""Check that a filename containing a null byte is properly
-		terminated."""
+		terminated.
+"""
 		with ZipFile(testfn, mode='w') as zipf:
 			zipf.writestr("foo.txt\u0000qqq", b"O, for a Muse of Fire!")
 			assert zipf.namelist() == ["foo.txt"]
 
 	def test_comments(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Check that comments on the archive are handled properly."""
+		"""Check that comments on the archive are handled properly.
+"""
 
 		# check default comment is empty
 		with ZipFile(testfn, mode='w') as zipf:
@@ -1860,7 +1872,8 @@ class TestsOther:
 			ZipFile(testfn, 'r')
 
 	def test_zipfile_with_short_extra_field(self):
-		"""If an extra field in the header is less than 4 bytes, skip it."""
+		"""If an extra field in the header is less than 4 bytes, skip it.
+"""
 		zipdata = (
 				b'PK\x03\x04\x14\x00\x00\x00\x00\x00\x93\x9b\xad@\x8b\x9e'
 				b'\xd9\xd3\x01\x00\x00\x00\x01\x00\x00\x00\x03\x00\x03\x00ab'
@@ -1987,7 +2000,8 @@ class AbstractBadCrcTests:
 	zip_with_bad_crc: bytes
 
 	def test_testzip_with_bad_crc(self):
-		"""Tests that files with bad CRCs return their name from testzip."""
+		"""Tests that files with bad CRCs return their name from testzip.
+"""
 		zipdata = self.zip_with_bad_crc
 
 		with ZipFile(io.BytesIO(zipdata), mode='r') as zipf:
@@ -1995,7 +2009,8 @@ class AbstractBadCrcTests:
 			assert "afile" == zipf.testzip()
 
 	def test_read_with_bad_crc(self):
-		"""Tests that files with bad CRCs raise a BadZipFile exception when read."""
+		"""Tests that files with bad CRCs raise a BadZipFile exception when read.
+"""
 		zipdata = self.zip_with_bad_crc
 
 		# Using ZipFile.read()
@@ -2124,7 +2139,8 @@ def encrypted_zip2(tmp_pathplus: PathPlus, testfn: PathPlus) -> Iterator[ZipFile
 class TestDecryption:
 	"""Check that ZIP decryption works. Since the library does not
 	support encryption at the moment, we use a pre-generated encrypted
-	ZIP file."""
+	ZIP file.
+"""
 
 	plain = b'zipfile.py encryption test'
 	plain2 = b'\x00' * 512
