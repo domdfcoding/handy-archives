@@ -55,12 +55,12 @@ findfile_subdir = "archivetestdata" if sys.version_info >= (3, 13) else None
 
 
 @pytest.fixture()
-def testfn(tmp_pathplus: PathPlus):
+def testfn(tmp_pathplus: PathPlus) -> PathPlus:
 	return tmp_pathplus / TESTFN
 
 
 @pytest.fixture()
-def testfn2(tmp_pathplus: PathPlus):
+def testfn2(tmp_pathplus: PathPlus) -> PathPlus:
 	return tmp_pathplus / TESTFN2
 
 
@@ -85,7 +85,7 @@ class AbstractTestsWithSourceFile:
 				]
 		cls.data = b''.join(cls.line_gen)
 
-	def make_test_archive(self, f, tmpdir, compression, compresslevel=None):
+	def make_test_archive(self, f, tmpdir: PathPlus, compression: int, compresslevel=None) -> None:
 		kwargs = {"compression": compression, "compresslevel": compresslevel}
 
 		if sys.version_info < (3, 7):
@@ -100,7 +100,7 @@ class AbstractTestsWithSourceFile:
 				for line in self.line_gen:
 					fp.write(line)
 
-	def zip_test(self, f, tmpdir, compression, compresslevel=None):
+	def zip_test(self, f, tmpdir: PathPlus, compression: int, compresslevel=None) -> None:
 		self.make_test_archive(f, tmpdir, compression, compresslevel)
 
 		# Read the ZIP archive
@@ -162,7 +162,7 @@ class AbstractTestsWithSourceFile:
 		for f in get_files(tmp_pathplus):
 			self.zip_test(f, tmp_pathplus, self.compression)
 
-	def zip_open_test(self, f, tmpdir, compression):
+	def zip_open_test(self, f, tmpdir: PathPlus, compression: int) -> None:
 		self.make_test_archive(f, tmpdir, compression)
 
 		# Read the ZIP archive
@@ -536,7 +536,7 @@ class TestStoredTestsWithSourceFile(AbstractTestsWithSourceFile):
 	compression = zipfile.ZIP_STORED
 	test_low_compression = None
 
-	def zip_test_writestr_permissions(self, f, tmpdir, compression):
+	def zip_test_writestr_permissions(self, f, tmpdir: PathPlus, compression: int) -> None:
 		# Make sure that writestr and open(... mode='w') create files with
 		# mode 0600, when they are passed a name rather than a ZipInfo
 		# instance.
@@ -851,7 +851,7 @@ class AbstractTestZip64InSmallFiles:
 		line_gen = (bytes(f"Test of zipfile line {i:d}.", "ascii") for i in range(0, FIXEDTEST_SIZE))
 		cls.data = b'\n'.join(line_gen)
 
-	def zip_test(self, f, tmpdir, compression):
+	def zip_test(self, f, tmpdir: PathPlus, compression: int) -> None:
 		# Create the ZIP archive
 		with ZipFile(f, 'w', compression, allowZip64=True) as zipfp:
 			zipfp.write(tmpdir / TESTFN, "another.name")
@@ -972,12 +972,12 @@ class AbstractTestZip64InSmallFiles:
 class TestStoredTestZip64InSmallFiles(AbstractTestZip64InSmallFiles):
 	compression = zipfile.ZIP_STORED
 
-	def large_file_exception_test(self, f, compression, filename):
+	def large_file_exception_test(self, f, compression: int, filename: str) -> None:
 		with ZipFile(f, 'w', compression, allowZip64=False) as zipfp:
 			with pytest.raises(zipfile.LargeZipFile):
 				zipfp.write(filename, "another.name")
 
-	def large_file_exception_test2(self, f, compression):
+	def large_file_exception_test2(self, f, compression: int) -> None:
 		with ZipFile(f, 'w', compression, allowZip64=False) as zipfp:
 			with pytest.raises(zipfile.LargeZipFile):
 				zipfp.writestr("another.name", self.data)
@@ -1264,7 +1264,7 @@ class TestLzmaWriter(AbstractWriterTests):
 
 class TestExtract:
 
-	def make_test_file(self, tmpdir):
+	def make_test_file(self, tmpdir: PathPlus) -> None:
 		with ZipFile(tmpdir / TESTFN2, 'w', zipfile.ZIP_STORED) as zipfp:
 			for fpath, fdata in SMALL_TEST_DATA:
 				zipfp.writestr(fpath, fdata)
@@ -1288,7 +1288,7 @@ class TestExtract:
 
 					unlink(writtenfile)
 
-	def _test_extract_with_target(self, target, tmpdir):
+	def _test_extract_with_target(self, target, tmpdir: PathPlus) -> None:
 		self.make_test_file(tmpdir)
 		with ZipFile(tmpdir / TESTFN2, 'r') as zipfp:
 			for fpath, fdata in SMALL_TEST_DATA:
@@ -1326,7 +1326,7 @@ class TestExtract:
 
 					unlink(outfile)
 
-	def _test_extract_all_with_target(self, target, tmpdir):
+	def _test_extract_all_with_target(self, target, tmpdir: PathPlus) -> None:
 		self.make_test_file(tmpdir)
 		with ZipFile(tmpdir / TESTFN2, 'r') as zipfp:
 			zipfp.extractall(target)
@@ -1416,7 +1416,7 @@ class TestExtract:
 				]
 		self._test_extract_hackers_arcnames(posix_hacknames, tmp_pathplus)
 
-	def _test_extract_hackers_arcnames(self, hacknames, tmp_pathplus):
+	def _test_extract_hackers_arcnames(self, hacknames, tmp_pathplus: PathPlus) -> None:
 		for arcname, fixedname in hacknames:
 			content = b'foobar' + arcname.encode()
 			with ZipFile(tmp_pathplus / TESTFN2, 'w', zipfile.ZIP_STORED) as zipfp:
@@ -1497,8 +1497,7 @@ class TestsOther:
 		assert zipfp.fp is None, "zipfp is not closed"
 
 	def test_close_on_exception(self, tmp_pathplus: PathPlus):
-		"""Check that the zipfile is closed if an exception is raised in the
-		'with' block."""
+		"""Check that the zipfile is closed if an exception is raised in the 'with' block."""
 		with ZipFile(tmp_pathplus / TESTFN2, 'w') as zipfp:
 			for fpath, fdata in SMALL_TEST_DATA:
 				zipfp.writestr(fpath, fdata)
@@ -1730,15 +1729,16 @@ class TestsOther:
 				assert f.read() == b"O, for a Muse of Fire!"
 
 	def test_open_non_existent_item(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Check that attempting to call open() for an item that doesn't
-		exist in the archive raises a RuntimeError."""
+		"""
+		Check that attempting to call open() for an item that doesn't exist in the archive raises a RuntimeError.
+		"""
+
 		with ZipFile(testfn, mode='w') as zipf:
 			with pytest.raises(KeyError):
 				zipf.open("foo.txt", 'r')
 
 	def test_bad_compression_mode(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Check that bad compression methods passed to ZipFile.open are
-		caught."""
+		"""Check that bad compression methods passed to ZipFile.open are caught."""
 		with pytest.raises(NotImplementedError):
 			ZipFile(testfn, 'w', -1)
 
@@ -1757,8 +1757,7 @@ class TestsOther:
 				zipf.open('x')
 
 	def test_null_byte_in_filename(self, tmp_pathplus: PathPlus, testfn: PathPlus):
-		"""Check that a filename containing a null byte is properly
-		terminated."""
+		"""Check that a filename containing a null byte is properly terminated."""
 		with ZipFile(testfn, mode='w') as zipf:
 			zipf.writestr("foo.txt\u0000qqq", b"O, for a Muse of Fire!")
 			assert zipf.namelist() == ["foo.txt"]
@@ -2122,9 +2121,11 @@ def encrypted_zip2(tmp_pathplus: PathPlus, testfn: PathPlus) -> Iterator[ZipFile
 
 
 class TestDecryption:
-	"""Check that ZIP decryption works. Since the library does not
-	support encryption at the moment, we use a pre-generated encrypted
-	ZIP file."""
+	"""
+	Check that ZIP decryption works.
+
+	Since the library does not support encryption at the moment, we use a pre-generated encrypted ZIP file.
+	"""
 
 	plain = b'zipfile.py encryption test'
 	plain2 = b'\x00' * 512
@@ -2211,7 +2212,7 @@ class AbstractTestsWithRandomBinaryFiles:
 				struct.pack("<f", random.random() * random.randint(-1000, 1000)) for i in range(datacount)
 				)
 
-	def make_test_archive(self, f, tmpdir, compression) -> None:
+	def make_test_archive(self, f, tmpdir: PathPlus, compression) -> None:
 		# Create the ZIP archive
 		with ZipFile(f, 'w', compression) as zipfp:
 			zipfp.write(tmpdir / TESTFN, "another.name")
@@ -2235,7 +2236,7 @@ class AbstractTestsWithRandomBinaryFiles:
 		for f in get_files(tmp_pathplus):
 			self.zip_test(f, tmp_pathplus, self.compression)
 
-	def zip_open_test(self, f, tmpdir, compression):
+	def zip_open_test(self, f, tmpdir: PathPlus, compression: int) -> None:
 		self.make_test_archive(f, tmpdir, compression)
 
 		# Read the ZIP archive
@@ -2324,7 +2325,7 @@ class TestsWithMultipleOpens:
 		cls.data1 = b'111' + random.randbytes(10000)
 		cls.data2 = b'222' + random.randbytes(10000)
 
-	def make_test_archive(self, f):
+	def make_test_archive(self, f) -> None:
 		# Create the ZIP archive
 		with ZipFile(f, 'w', zipfile.ZIP_DEFLATED) as zipfp:
 			zipfp.writestr("ones", self.data1)
