@@ -83,7 +83,7 @@ class ArchiveFileRegressionFixture(AdvancedFileRegressionFixture):
 
 
 @pytest.fixture()
-def archive_regression(datadir, original_datadir, request) -> AdvancedFileRegressionFixture:
+def archive_regression(datadir, original_datadir, request) -> AdvancedFileRegressionFixture:  # noqa: MAN001
 	"""
 	Pytest fixture for performing regression tests on files in ``tar`` and ``zip`` archives.
 	"""

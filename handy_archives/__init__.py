@@ -159,7 +159,7 @@ class TarFile(tarfile.TarFile):
 		else:
 			return super().extract(member, path, set_attrs, numeric_owner=numeric_owner)
 
-	def extractfile(self, member: Union[str, tarfile.TarInfo]) -> IO[bytes]:
+	def extractfile(self, member: Union[PathLike, tarfile.TarInfo]) -> IO[bytes]:
 		"""
 		Extract a member from the archive as a file object.
 
@@ -169,14 +169,14 @@ class TarFile(tarfile.TarFile):
 		Otherwise :exc:`FileNotFoundError` is raised.
 		"""
 
-		if isinstance(member, str):
-			tarinfo = self._getmember(member)  # type: ignore[attr-defined]
+		if isinstance(member, tarfile.TarInfo):
+			fd = super().extractfile(member)
+		else:
+			tarinfo = self._getmember(os.fspath(member))  # type: ignore[attr-defined]
 			if tarinfo is None:
 				raise FileNotFoundError(member)
 			else:
-				fd = super().extractfile(member)
-		else:
-			fd = super().extractfile(member)
+				fd = super().extractfile(os.fspath(member))
 
 		if fd is None:
 			raise FileNotFoundError(member)
@@ -185,7 +185,7 @@ class TarFile(tarfile.TarFile):
 
 	def read_text(
 			self,
-			member: Union[str, tarfile.TarInfo],
+			member: Union[PathLike, tarfile.TarInfo],
 			*,
 			normalize_nl: bool = False,
 			) -> str:
@@ -204,7 +204,7 @@ class TarFile(tarfile.TarFile):
 
 		return _normalize_nl(self.read_bytes(member).decode("UTF-8"), normalize_nl)
 
-	def read_bytes(self, member: Union[str, tarfile.TarInfo]) -> bytes:
+	def read_bytes(self, member: Union[PathLike, tarfile.TarInfo]) -> bytes:
 		"""
 		Returns the content of the given file as bytes.
 
@@ -293,7 +293,7 @@ class ZipFile(zipfile.ZipFile):
 
 	def extractfile(
 			self,
-			member: Union[str, zipfile.ZipInfo],
+			member: Union[PathLike, zipfile.ZipInfo],
 			pwd: Union[str, bytes, None] = None,
 			) -> IO[bytes]:
 		"""
@@ -313,7 +313,7 @@ class ZipFile(zipfile.ZipFile):
 			info = member
 		else:
 			# Get info object for 'member'
-			maybe_info = self.NameToInfo.get(member)
+			maybe_info = self.NameToInfo.get(os.fspath(member))
 			if maybe_info is None:
 				raise FileNotFoundError(member)
 			else:
@@ -326,7 +326,7 @@ class ZipFile(zipfile.ZipFile):
 
 	def read_text(
 			self,
-			member: Union[str, zipfile.ZipInfo],
+			member: Union[PathLike, zipfile.ZipInfo],
 			pwd: Union[str, bytes, None] = None,
 			*,
 			normalize_nl: bool = False,
@@ -349,7 +349,7 @@ class ZipFile(zipfile.ZipFile):
 
 	def read_bytes(
 			self,
-			member: Union[str, zipfile.ZipInfo],
+			member: Union[PathLike, zipfile.ZipInfo],
 			pwd: Union[str, bytes, None] = None,
 			) -> bytes:
 		"""

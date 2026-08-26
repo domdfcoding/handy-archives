@@ -64,7 +64,7 @@ def testfn2(tmp_pathplus: PathPlus) -> PathPlus:
 	return tmp_pathplus / TESTFN2
 
 
-def get_files(tmpdir: PathPlus):
+def get_files(tmpdir: PathPlus) -> Iterator[TemporaryFile]:
 	yield str(tmpdir / TESTFN2)
 	with TemporaryFile() as f:
 		yield f
