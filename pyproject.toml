@@ -47,8 +47,8 @@ Homepage = "https://github.com/domdfcoding/handy-archives"
 Documentation = "https://handy-archives.readthedocs.io/en/latest"
 
 [project.optional-dependencies]
-testing = [ "coincidence>=0.2.0", "pytest>=6.0.0",]
-all = [ "coincidence>=0.2.0", "pytest>=6.0.0",]
+testing = [ "coincidence>=0.3.0", "pytest>=6.0.0",]
+all = [ "coincidence>=0.3.0", "pytest>=6.0.0",]
 
 [tool.sphinx-pyproject]
 github_username = "domdfcoding"
@@ -81,6 +81,7 @@ extensions = [
     "sphinx_toolbox.latex.succinct_seealso",
     "sphinx_toolbox.more_autosummary.column_widths",
 ]
+sphinxemoji_source = "https://cdn.jsdelivr.net/npm/twemoji@14.0.2/dist/twemoji.min.js"
 gitstamp_fmt = "%d %b %Y"
 templates_path = [ "_templates",]
 html_static_path = [ "_static",]

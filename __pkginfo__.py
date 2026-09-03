@@ -3,5 +3,5 @@
 __all__ = ["extras_require"]
 
 extras_require = {
-		"testing": ["coincidence>=0.2.0", "pytest>=6.0.0"], "all": ["coincidence>=0.2.0", "pytest>=6.0.0"]
+		"testing": ["coincidence>=0.3.0", "pytest>=6.0.0"], "all": ["coincidence>=0.3.0", "pytest>=6.0.0"]
 		}
