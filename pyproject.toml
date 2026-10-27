@@ -169,6 +169,9 @@ reformat = true
 [tool.flit.module]
 name = "handy_archives"
 
+[tool.flit.sdist]
+include = [ "tests/", "tox.ini",]
+
 [tool.dependency-dash."requirements.txt"]
 order = 10
 
